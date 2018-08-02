@@ -1,0 +1,30 @@
+# import Customer, Hotel, Property, AddressCreateInput, BED from "./generated/prisma.graphql"
+
+type Query {
+    findHotels(filter: String): [Hotel!]!
+    findProperties(filter: String): [Property!]!
+    findCustomer(email: String!): Customer
+}
+
+type Mutation {
+    customerSignup(name: String, email: String!, password: String!): CustomerAuthPayload
+    customerLogin(email: String!, password: String!): CustomerAuthPayload
+    updateCustomerInfo(email: String, password: String, address: AddressCreateInput, phone: String): Customer
+    createHotel(name: String!, about: String, logo: String): HotelAuthPayload
+    updateBasicHotelInfo(id: ID!, name: String, about: String, logo: String): Hotel
+    createPropertyForHotel(name: String!, hotel: ID!, address: AddressCreateInput!, phone: String!, email: String!): PropertyAuthPayload
+    createRoomForProperty(hotel: ID!, property: ID!, name: String, price: Float!, beds: [BED!]!): Room
+}
+
+type CustomerAuthPayload {
+    token: String
+    customer: Customer
+}
+
+type HotelAuthPayload {
+    hotel: Hotel
+}
+
+type PropertyAuthPayload {
+    property: Property
+}
