@@ -1,0 +1,8 @@
+#endpoint: ''
+endpoint: https://us1.prisma.sh/subhramitra-borkakati-b38840/database/dev
+datamodel: datamodel.graphql
+
+# Deploy hook
+hooks:
+  post-deploy:
+    - graphql get-schema --project database

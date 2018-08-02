@@ -1,0 +1,163 @@
+type Customer {
+  id: ID! @unique
+  name: String
+  email: String! @unique
+  password: String!
+  phone: String
+  address: Address
+  reviews: [Review!]! @relation(name: "ReviewedBy")
+  bookings: [Booking!]!
+  likedReviews: [Review!]! @relation(name: "UpVotedBy")
+  dislikedReviews: [Review!]! @relation(name: "DownVotedBy") 
+  hotels: [Hotel!]!
+}
+
+type Hotel {
+  id: ID! @unique
+  owner: Customer!
+  name: String! @unique
+  about: String
+  logo: String
+  hotelProperties: [Property!]! @relation(name: "HotelProperties" onDelete: CASCADE)
+  hotelPolicies: [Policy!]! @relation(name: "HotelPolicies")
+  hotelFacilities: [Facility!]! @relation(name: "HotelFacilities")
+}
+
+type Property {
+  id: ID! @unique
+  name: String!
+  hotel: Hotel! @relation(name: "HotelProperties")
+  about: String
+  photos: [String!]!
+  address: Address!
+  phone: String!
+  email: String!
+  reviews: [Review!]! @relation(name: "PropertyReview")
+  rooms: [Room!]! @relation(name: "PropertyRooms" onDelete: CASCADE)
+  propertyPolicies: [Policy!]! @relation(name: "PropertyPolicies")
+  propertyFacilities: [Facility!]! @relation(name: "PropertyFacilities")
+  propertyCategories: [Category!]!
+}
+
+type Room {
+  id: ID! @unique
+  name: String
+  property: Property! @relation(name: "PropertyRooms")
+  photos: [String!]!
+  price: Float
+  beds: [BED!]!
+  roomFacilities: [Facility!]! @relation(name: "RoomFacilities")
+  bookings: [Booking!]!
+}
+
+type Facility {
+  id: ID! @unique
+  type: FacilityType!
+  name: String!
+  description: String
+  hotels: [Hotel!]! @relation(name: "HotelFacilities")
+  properties: [Property!]! @relation(name: "PropertyFacilities")
+  rooms: [Room!]! @relation(name: "RoomFacilities")
+}
+
+type Address {
+  id: ID! @unique
+  street: String!
+  city: String!
+  region: String
+  country: String!
+}
+
+type Policy {
+  id: ID! @unique
+  policy: String! @unique
+  hotels: [Hotel!]! @relation(name: "HotelPolicies")
+  properties: [Property!]! @relation(name: "PropertyPolicies")
+}
+
+type Review {
+  id: ID! @unique
+  rating: Float!
+  comment: String
+  by: Customer! @relation(name: "ReviewedBy")
+  for: Property! @relation(name: "PropertyReview") 
+  upVotes: [Customer!]! @relation(name: "UpVotedBy")
+  downVotes: [Customer!]! @relation(name: "DownVotedBy")
+}
+
+type Booking {
+  id: ID! @unique
+  guest: Customer!
+  rooms: [Room!]!
+  startDate: DateTime!
+  endDate: DateTime!
+  numberOfGuests: Int 
+}
+
+type Order {
+  id: ID! @unique
+  booking: Booking!
+  amount: Float!
+  taxes: [Tax!]!
+  promos: [Promo!]!
+  payable: Float!
+  status: Status!
+}
+
+type Promo {
+  id: ID! @unique
+  code: String!
+  description: String
+  off: Float!
+  unit: Unit!
+}
+
+type Tax {
+  id: ID! @unique
+  name: String!
+  description: String
+  percent: Float!
+}
+
+enum Unit {
+  PERCENT
+  NZD
+  INR
+  USD
+}
+
+enum Status {
+  PAID
+  PAY_AT_CHECKOUT
+  WAIVED
+}
+
+enum BED {
+  KINGSIZE
+  QUEENSIZE
+  SINGLE
+  BUNK
+  EXTRA
+}
+
+enum Category {
+  FAMILY
+  WORK
+  COUPLE
+  SOLO
+  PET
+}
+
+enum FacilityType {
+  COMPLIMENTARY
+  BASIC
+  LEISURE
+  WORK
+  SAFETY
+  KIDS
+}
+
+
+
+
+

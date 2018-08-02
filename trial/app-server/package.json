@@ -1,0 +1,23 @@
+{
+  "name": "app-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "npm-run-all --parallel start playground"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "graphql-yoga": "^1.14.12",
+    "jsonwebtoken": "^8.3.0",
+    "prisma-binding": "^2.1.1"
+  },
+  "devDependencies": {
+    "graph-cli": "0.0.1"
+  }
+}
