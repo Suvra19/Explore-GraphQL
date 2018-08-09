@@ -4,14 +4,14 @@ const Query = require('../resolvers/Query')
 const Mutation = require('../resolvers/Mutation')
 //const Subscription = require('../resolvers/Subscription')
 const CustomerAuthPayload = require('../resolvers/CustomerAuthPayload')
-const HotelAuthPayload = require('../resolvers/HotelAuthPayload')
 const PropertyAuthPayload = require('../resolvers/PropertyAuthPayload')
+const { applyMiddleware } = require('graphql-middleware') 
+
 
 const resolvers = {
     Query,
     Mutation,
     CustomerAuthPayload,
-    HotelAuthPayload,
     PropertyAuthPayload,
    // Subscription,
 }

@@ -14,7 +14,13 @@ class Header extends Component {
                         Home
                     </Link>
                     <Link to="/properties" className="ml1 no-underline black">
-                        Property List
+                        Properties
+                    </Link>
+                    <Link to="/hotels" className="ml1 no-underline black">
+                        Hotels
+                    </Link>
+                    <Link to="/createProperty" className="ml1 no-underline black">
+                        Create property
                     </Link>
                     {authToken && (
                         <div className="flex">

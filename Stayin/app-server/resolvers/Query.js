@@ -1,31 +1,32 @@
-findHotels = (parent, args, context, info) => {
-    return context.prisma.query.hotels({
-        where: {
-            OR: [
-                {
-                    name_contains: args.filter
-                }, 
-                {
-                    about_contains: args.filter
-                }
-            ]
-        }
-    }, info)
-}
-
 findProperties = (parent, args, context, info) => {
-    console.log("Reached here...")
-    const {filter, first, skip} = args
-    return context.prisma.query.properties({
-        where: {
-            OR: [
-                {
-                    address: {
-                        city: filter
-                    }
-                }
-            ]
+    console.log('Here')
+    const {name, city, tripType, checkIn, checkOut, adults, kids, infants, first, skip} = args
+    let filter = {
+        AND: []
+    }
+    if (name) {
+        let obj = {
+            name_contains: name
         }
+        filter.AND.push(obj)
+    }
+    if (city) {
+        let obj = {
+            address: {
+                city_contains: city
+            }
+        }
+        filter.AND.push(obj)
+    }
+
+    if (filter.AND.length === 0) {
+        filter = {
+            name_not: ""
+        }
+    }
+
+    return context.prisma.query.properties({
+        where: filter
     }, info)
 }
 
@@ -37,8 +38,85 @@ findCustomer = (parent, args, context, info) => {
     }, info)
 }
 
+fetchOneProperty = (parent, args, context, info) => {
+    let where = {
+        'id': args.id
+    }
+
+    return context.prisma.query.property({
+        where: where
+    }, info)
+}
+
+
+
+fetchPolicies = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.policy) {
+        where['policy'] = args.policy
+    } else {
+        where['policy_not'] = "" 
+    }
+
+    return context.prisma.query.policies({
+        where: where
+    }, info)
+}
+
+fetchCategories = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.policy) {
+        where['name'] = args.name
+    } else {
+        where['name_not'] = "" 
+    }
+
+    return context.prisma.query.categories({
+        where: where
+    }, info)
+}
+
+fetchFacilities = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.policy) {
+        where['name'] = args.name
+    } else {
+        where['name_not'] = "" 
+    }
+
+    return context.prisma.query.facilities({
+        where: where
+    }, info)
+}
+
+fetchFacilityTypes = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.policy) {
+        where['name'] = args.name
+    } else {
+        where['name_not'] = "" 
+    }
+
+    return context.prisma.query.facilityTypes({
+        where: where
+    }, info)
+}
+
+
 module.exports = {
-    findHotels,
     findProperties,
     findCustomer,
+    fetchPolicies,
+    fetchCategories,
+    fetchFacilities,
+    fetchFacilityTypes,
+    fetchOneProperty,
 }

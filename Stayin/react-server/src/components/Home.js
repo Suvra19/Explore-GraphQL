@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
-import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Property from './Property'
 import { withApollo } from 'react-apollo'
+import { setFormDataState } from '../common/utils'
 
 const PROPERTY_SEARCH = gql`
-    query PropertySearch($filter: String!) {
-        findProperties(filter: $filter) {
+    query PropertySearch($city: String!, $hotel: String, $adults: Int!) {
+        findProperties(city: $city, hotel: $hotel, adults: $adults) {
             id
             name
             about
@@ -21,7 +21,6 @@ const PROPERTY_SEARCH = gql`
                 id
                 name
                 price
-                beds
             }
         }
     }
@@ -31,48 +30,59 @@ class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            hotel: '',
-            city: '',
-            tripType: 'family',
-            checkIn: '',
-            checkOut: '',
-            minPrice: '',
-            maxPrice: '',
-            adults: 1,
-            kids: 0,
-            infants: 0,
+            formData: {
+                hotel: '',
+                city: '',
+                tripType: 'family',
+                petFriendly: false,
+                checkIn: '',
+                checkOut: '',
+                minPrice: '',
+                maxPrice: '',
+                adults: 1,
+                kids: 0,
+                infants: 0,
+            },
             properties: [],
-            filter: '',
         }
         this.handleDates = this.handleDates.bind(this)
         this.handleTripType = this.handleTripType.bind(this)
+        this.handleFormDataChange = this.handleFormDataChange.bind(this)
+    }
+
+    // _setFormDataState(key, value) {
+    //     this.setState({
+    //         formData: {
+    //             ...this.state.formData,
+    //             [key]: value
+    //         }
+    //     })
+    // }
+
+    handleFormDataChange(event) {
+        let key = event.target.id
+        let value = event.target.value
+        if (event.target.id === "petFriendly") {
+            value = !this.state.formData.petFriendly
+        }
+        setFormDataState.call(this, key, value)
     }
 
     async handleTripType(event) {
-        await this.setState({
-            tripType: event.target.value
-        })
-        if (this.state.tripType === 'romantic') {
-            this.setState({
-                adults: 2
-            })
+        await setFormDataState.call(this, "tripType", event.target.value)
+        if (this.state.formData.tripType === 'romantic') {
+            setFormDataState.call(this, "adults", 2)
         }
-        if (this.state.tripType === 'family' || this.state.tripType === 'solo' || 
-        this.state.tripType === 'work') {
-            this.setState({
-                adults: 1
-            })
+        if (this.state.formData.tripType === 'family' || this.state.formData.tripType === 'solo' || 
+        this.state.formData.tripType === 'work') {
+            setFormDataState.call(this, "adults", 1)
         }
     }
 
     async handleDates(event) {
-        await this.setState({
-            checkIn: event.target.value
-        })
+        await setFormDataState.call(this, "checkIn", event.target.value) 
         await this._updateMinMaxCheckout()
-        this.setState({
-            checkOut: this.minCheckOut
-        })
+        setFormDataState.call(this, "checkOut", this.minCheckOut)
     }
 
     _updateMinMaxCheckout() {
@@ -94,29 +104,33 @@ class Home extends Component {
     }
 
     render() {
-        const {hotel, city, tripType, checkIn, checkOut, minPrice, maxPrice, adults, kids, infants} = this.state
+        const {hotel, city, tripType, petFriendly, checkIn, checkOut, minPrice, maxPrice, adults, kids, infants} = this.state.formData
         return (
             <div>
+                <div className="flex mt3">
+                    {this.state.properties.map((property, index) => (
+                        <Property key={property.id} property={property} index={index}/>
+                    ))}
+                </div>
+                {this.state.properties.length === 0 && 
                 <div className="flex flex-column">
                     <label>
                         Hotel
                         <input 
+                            id="hotel"
                             value={hotel}
-                            onChange={e => this.setState({
-                                hotel: e.target.value
-                            })} 
+                            onChange={this.handleFormDataChange} 
                             type="text"
                             placeholder="Hotel"/>
                     </label>
                     <label>
                         City
                         <input 
-                        value={city}
-                        onChange={e => this.setState({
-                            city: e.target.value
-                        })} 
-                        type="text"
-                        placeholder="City"/>     
+                            id="city"
+                            value={city}
+                            onChange={this.handleFormDataChange}
+                            type="text"
+                            placeholder="City"/>     
                     </label>
                     <label>
                         Trip type
@@ -128,13 +142,20 @@ class Home extends Component {
                             <option value="romantic">Romantic</option>
                         </select>
                     </label>
+                    <label>
+                        Pet friendly:
+                        <input type="checkbox" 
+                            id="petFriendly"
+                            value={petFriendly} 
+                            onChange={this.handleFormDataChange}
+                        />
+                    </label>
                     <p>Guests</p>
                     <label>
                         Adults:
                         <input type="number" 
-                            value={adults} onChange={e => this.setState({
-                                adults: e.target.value
-                            })}
+                            id="adults"
+                            value={adults} onChange={this.handleFormDataChange}
                             min="1"
                             max="10"
                         />
@@ -143,9 +164,8 @@ class Home extends Component {
                         <label>
                             Kids:
                             <input type="number" 
-                                value={kids} onChange={e => this.setState({
-                                    kids: e.target.value
-                                })}
+                                id="kids"
+                                value={kids} onChange={this.handleFormDataChange}
                                 min="0"
                                 max="10"
                             />
@@ -155,9 +175,8 @@ class Home extends Component {
                         <label>
                             Infants:
                             <input type="number" 
-                                value={infants} onChange={e => this.setState({
-                                    infants: e.target.value
-                                })}
+                                id="infants"
+                                value={infants} onChange={this.handleFormDataChange}
                                 min="0"
                                 max="10"
                             />
@@ -166,6 +185,7 @@ class Home extends Component {
                     <label>
                         Check-in:
                         <input 
+                            id="checkIn"
                             value={checkIn}
                             onChange={this.handleDates}
                             type="date"
@@ -175,35 +195,28 @@ class Home extends Component {
                     <label>
                         Check-out:
                         <input 
+                            id="checkOut"
                             value={checkOut}
-                            onChange={e => this.setState({
-                                checkOut: e.target.value
-                            })}
+                            onChange={this.handleFormDataChange}
                             type="date"
                             min={this.minCheckOut}
                             max={this.maxCheckOut}/>
                     </label>
-                </div>
-               <button onClick={() => this._search()}>
+                    <button onClick={() => this._search()}>
                     Search
-                </button>
-                <div className="flex mt3">
-                    {this.state.properties.map((property, index) => (
-                        <Property key={property.id} property={property} index={index}/>
-                    ))}
+                    </button>
                 </div>
+            }
             </div>
         ) 
     }
 
     _search = async () => {
-        const filter = this.state.city
-        console.log(`Filter ${filter}`)
+        const {city, hotel, adults} = this.state.formData
         const result = await this.props.client.query({
             query: PROPERTY_SEARCH,
-            variables: {filter},
+            variables: {city, hotel, adults}
         })
-        console.log(`Result ${JSON.stringify(result)}`)
         const propertyList = result.data.findProperties
         this.setState({properties: propertyList})   
     }

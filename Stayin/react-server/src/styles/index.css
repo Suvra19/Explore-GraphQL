@@ -41,3 +41,24 @@ input {
   cursor: pointer;
   max-width: 250px;
 }
+
+.options {
+  margin: 2px;
+  padding: 5px;
+}
+
+.green {
+  margin: 2px;
+  padding: 5px;
+  border: 1px solid  lightseagreen;
+  border-radius: 50%;
+  background-color: lightseagreen
+}
+
+.blue {
+  margin: 2px;
+  padding: 5px;
+  border: 1px solid lightblue;
+  border-radius: 50%;
+  background-color: lightblue
+}

@@ -1,28 +1,29 @@
-# import Customer, Hotel, Property, AddressCreateInput, BED from "./generated/prisma.graphql"
+# import Customer, Property, Category, Facility, FacilityType AddressCreateInput, PropertyCreatephotosInput, AddressCreateOneInput, RoomCreateManyWithoutPropertyInput, PolicyCreateManyWithoutPropertiesInput, CategoryCreateManyWithoutPropertiesInput, PropertyFacilityCreateManyWithoutPropertyInput, PropertyCreateOneWithoutRoomsInput,PriceCreateManyInput, BedCreateManyWithoutRoomsInput, RoomFacilityCreateManyWithoutRoomInput from "./generated/prisma.graphql"
 
 type Query {
-    findHotels(filter: String): [Hotel!]!
-    findProperties(filter: String): [Property!]!
+    findProperties(name: String, city: String, tripType: String, checkIn: String, checkOut: String, adults: Int, kids: Int, infants: Int, petFriendly: Boolean, first: Int, skip: Int): [Property!]!
     findCustomer(email: String!): Customer
+    fetchPolicies(id: ID, policy: String): [Policy!]!
+    fetchCategories(id: ID, name: String): [Category!]!
+    fetchFacilities(id: ID, name: String): [Facility!]!
+    fetchFacilityTypes(id: ID, name: String): [FacilityType!]!
+    fetchOneProperty(id: ID!): Property
 }
 
 type Mutation {
     customerSignup(name: String, email: String!, password: String!): CustomerAuthPayload
     customerLogin(email: String!, password: String!): CustomerAuthPayload
     updateCustomerInfo(email: String, password: String, address: AddressCreateInput, phone: String): Customer
-    createHotel(name: String!, about: String, logo: String): HotelAuthPayload
-    updateBasicHotelInfo(id: ID!, name: String, about: String, logo: String): Hotel
-    createPropertyForHotel(name: String!, hotel: ID!, address: AddressCreateInput!, phone: String!, email: String!): PropertyAuthPayload
-    createRoomForProperty(hotel: ID!, property: ID!, name: String, price: Float!, beds: [BED!]!): Room
+    createProperty(name: String!, about: String, logo: String, phone: String!, email: String!, photos: PropertyCreatephotosInput, address: AddressCreateOneInput!, rooms: RoomCreateManyWithoutPropertyInput, policies: PolicyCreateManyWithoutPropertiesInput, categories: CategoryCreateManyWithoutPropertiesInput, facilties: PropertyFacilityCreateManyWithoutPropertyInput): Property
+    createRoom(name: String, property: PropertyCreateOneWithoutRoomsInput!, prices: PriceCreateManyInput!, beds: BedCreateManyWithoutRoomsInput!, facilties: RoomFacilityCreateManyWithoutRoomInput)
+    # updateBasicHotelInfo(id: ID!, name: String, about: String, logo: String): Hotel
+    # createPropertyForHotel(name: String!, hotel: ID!, address: AddressCreateInput!, phone: String!, email: String!): PropertyAuthPayload
+    #createRoomForProperty(hotel: ID!, property: ID!, name: String, price: Float!, beds: [Bed!]!): Room
 }
 
 type CustomerAuthPayload {
     token: String
     customer: Customer
-}
-
-type HotelAuthPayload {
-    hotel: Hotel
 }
 
 type PropertyAuthPayload {

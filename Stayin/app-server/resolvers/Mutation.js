@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { APP_SECRET, getCustomerId } = require('../src/utils')
+const { APP_SECRET, getCustomerId, getQueryDataFromArgs } = require('../src/utils')
+const { AuthenticationError } = require('apollo-server-core')
+
 
 customerSignup = async (parent, args, context, info) => {
     const password = await bcrypt.hash(args.password, 10)
@@ -61,88 +63,94 @@ updateCustomerInfo = (parent, args, context, info) => {
     }, info)
 }
 
-createHotel = async (parent, args, context, info) => {
+//cjkdbg5h8000l0815keedt25l
+createProperty = (parent, args, context, info) => {
     const owner = getCustomerId(context)
-    const hotel = await context.prisma.mutation.createHotel({
-        data: {
-            name: args.name,
-            owner: {
-                connect: {
-                    id: owner
-                }
-            },
-            about: args.about,
-        }
-    }, `{ id }`)
-
-    return {
-        hotel
-    }
-}
-
-updateBasicHotelInfo = async (parent, args, context, info) => {
-    const owner = getCustomerId(context)
-    const customerOwnsHotel = context.prisma.exists.Hotel({
-        id: args.id,
-        owner: {
+    let data = getQueryDataFromArgs(args)
+    data['owner'] = {
+        connect: {
             id: owner
-        }
-    })
-    if (!await customerOwnsHotel) {
-        throw new Error(`Customer does not own this hotel`)
+        } 
     }
-    const {id, ...data} = args
-    return context.prisma.mutation.updateHotel({
-        data: data,
-        where: {
-            id: args.id
-        }
+    if (!data.hasOwnProperty('name') || !data.hasOwnProperty('address')) {
+        return new Error(`Required field(s) missing in ${JSON.stringify(data)}`)
+    }
+   return context.prisma.mutation.createProperty({
+        data: data
     }, info)
 }
 
-createPropertyForHotel = async (parent, args, context, info) => {
-    const hotelOwner = getCustomerId(context)
-    const hotelAndPropertyExists = context.prisma.exists.Property({
-        name: args.name,
-        hotel: {
-            id: args.hotel
-        },
-    })
-    const customerOwnsHotel = context.prisma.exists.Hotel({
-        id: args.hotel,
-        owner: {
-            id: hotelOwner
-        }
-    })
-
-    if (await hotelAndPropertyExists) {
-        if (!await customerOwnsHotel) {
-            throw new Error(`Customer does not own this hotel`)
-        } else {
-            throw new Error(`Property with name ${args.name} already exists for this hotel`)
-        }
+createRoom = (parent, args, context, info) => {
+    //Authenticate ownership
+    let data = getQueryDataFromArgs(args)
+    if (!data.hasOwnProperty('property') || !data.hasOwnProperty('prices') || !data.hasOwnProperty('beds')) {
+        return new Error(`Required field(s) missing in ${JSON.stringify(data)}`)
     }
-    const property = await context.prisma.mutation.createProperty({
-        data: {
-            name: args.name,
-            about: args.about,
-            phone: args.phone,
-            email: args.email,
-            address: {
-                create: args.address
-            },
-            hotel: {
-                connect: {
-                    id: args.hotel
-                }
-            },
-        }
-    }, `{ id }`)
-
-    return {
-        property
-    }
+    return context.prisma.mutation.createRoom({
+        data: data
+    }, info)
 }
+
+// updateBasicHotelInfo = async (parent, args, context, info) => {
+//     const owner = getCustomerId(context)
+//     const customerOwnsHotel = context.prisma.exists.Hotel({
+//         id: args.id,
+//         owner: {
+//             id: owner
+//         }
+//     })
+//     if (!await customerOwnsHotel) {
+//         throw new Error(`Customer does not own this hotel`)
+//     }
+//     const {id, ...data} = args
+//     return context.prisma.mutation.updateHotel({
+//         data: data,
+//         where: {
+//             id: args.id
+//         }
+//     }, info)
+// }
+
+// createPropertyForHotel = async (parent, args, context, info) => {
+//     const hotelOwner = getCustomerId(context)
+//     const hotelAndPropertyExists = context.prisma.exists.Property({
+//         name: args.name,
+//     })
+//     const customerOwnsHotel = context.prisma.exists.Hotel({
+//         id: args.hotel,
+//         owner: {
+//             id: hotelOwner
+//         }
+//     })
+
+//     if (await hotelAndPropertyExists) {
+//         if (!await customerOwnsHotel) {
+//             throw new Error(`Customer does not own this hotel`)
+//         } else {
+//             throw new Error(`Property with name ${args.name} already exists for this hotel`)
+//         }
+//     }
+//     const property = await context.prisma.mutation.createProperty({
+//         data: {
+//             name: args.name,
+//             about: args.about,
+//             phone: args.phone,
+//             email: args.email,
+//             address: {
+//                 create: args.address
+//             },
+//             hotel: {
+//                 connect: {
+//                     id: args.hotel
+//                 }
+//             },
+//         }
+//     }, `{ id }`)
+
+//     return {
+//         property
+//     }
+// }
 
 createRoomForProperty = async (parent, args, context, info) => {
     const hotelOwner = getCustomerId(context)
@@ -185,9 +193,6 @@ createRoomForProperty = async (parent, args, context, info) => {
 module.exports = {
     customerSignup,
     customerLogin,
-    createHotel,
-    createPropertyForHotel,
-    createRoomForProperty,
+    createProperty,
     updateCustomerInfo,
-    updateBasicHotelInfo,
 }

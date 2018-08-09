@@ -16,15 +16,6 @@ const PROPERTY_QUERY = gql`
                 city
                 country
             }
-            hotel {
-                name
-            }
-            rooms {
-                id
-                name
-                price
-                beds
-            }
         }
     }`
 

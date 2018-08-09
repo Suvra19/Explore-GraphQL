@@ -9,55 +9,86 @@ type Customer {
   bookings: [Booking!]!
   likedReviews: [Review!]! @relation(name: "UpVotedBy")
   dislikedReviews: [Review!]! @relation(name: "DownVotedBy") 
-  hotels: [Hotel!]!
-}
-
-type Hotel {
-  id: ID! @unique
-  owner: Customer!
-  name: String! @unique
-  about: String
-  logo: String
-  hotelProperties: [Property!]! @relation(name: "HotelProperties" onDelete: CASCADE)
-  hotelPolicies: [Policy!]! @relation(name: "HotelPolicies")
-  hotelFacilities: [Facility!]! @relation(name: "HotelFacilities")
+  properties: [Property!]!
+  preference: Preference
 }
 
 type Property {
   id: ID! @unique
+  owner: Customer!
   name: String!
-  hotel: Hotel! @relation(name: "HotelProperties")
   about: String
+  logo: String
   photos: [String!]!
-  address: Address!
-  phone: String!
+  address: Address! @unique
+  phone: String! 
   email: String!
   reviews: [Review!]! @relation(name: "PropertyReview")
   rooms: [Room!]! @relation(name: "PropertyRooms" onDelete: CASCADE)
-  propertyPolicies: [Policy!]! @relation(name: "PropertyPolicies")
-  propertyFacilities: [Facility!]! @relation(name: "PropertyFacilities")
-  propertyCategories: [Category!]!
+  policies: [Policy!]! @relation(name: "PropertyPolicies")
+  categories: [Category!]! @relation(name: "PropertyCategories")
+  facilities: [PropertyFacility!]! @relation(name: "PropertyFacilities")
 }
+
+type Category {
+  id: ID! @unique
+  name: String! @unique
+  properties: [Property!]! @relation(name: "PropertyCategories")
+}
+
 
 type Room {
   id: ID! @unique
   name: String
   property: Property! @relation(name: "PropertyRooms")
   photos: [String!]!
-  price: Float
-  beds: [BED!]!
-  roomFacilities: [Facility!]! @relation(name: "RoomFacilities")
+  prices: [Price!]!
+  beds: [Bed!]! @relation(name: "RoomBedSetup")
+  facilities: [RoomFacility!]! @relation(name: "RoomFacilities")
   bookings: [Booking!]!
+}
+
+type Bed {
+  id: ID! @unique
+  quantity: Int!
+  type: BedType! @unique @relation(name: "BedSetup")
+  rooms: [Room!]! @relation(name: "RoomBedSetup")
+}
+
+type BedType {
+  id: ID! @unique
+  name: String! @unique
+  beds: [Bed!]! @relation(name: "BedSetup")
 }
 
 type Facility {
   id: ID! @unique
-  type: FacilityType!
-  name: String!
-  description: String
-  hotels: [Hotel!]! @relation(name: "HotelFacilities")
-  properties: [Property!]! @relation(name: "PropertyFacilities")
-  rooms: [Room!]! @relation(name: "RoomFacilities")
+  name: String! @unique
+  type: FacilityType! @relation(name: "FacilityTypeRel")
+  properties: [PropertyFacility!]! 
+  rooms: [RoomFacility!]!
+}
+
+type PropertyFacility {
+  id: ID! @unique
+  property: Property! @relation(name: "PropertyFacilities")
+  facility: Facility!
+  description: String!
+  isComplimentary: Boolean @default(value: "false")
+}
+
+type RoomFacility {
+  id: ID! @unique
+  room: Room! @relation(name: "RoomFacilities")
+  facility: Facility!
+  description: String!
+  isComplimentary: Boolean @default(value: "false")
+}
+
+type FacilityType {
+  id: ID! @unique
+  name: String! @unique
+  facilities: [Facility!]! @relation(name: "FacilityTypeRel")
 }
 
 type Address {
@@ -71,7 +102,6 @@ type Address {
 type Policy {
   id: ID! @unique
   policy: String! @unique
-  hotels: [Hotel!]! @relation(name: "HotelPolicies")
   properties: [Property!]! @relation(name: "PropertyPolicies")
 }
 
@@ -119,6 +149,55 @@ type Tax {
   percent: Float!
 }
 
+type Price {
+  id: ID! @unique
+  amount: Float!
+  currency: Currency!
+  type: PriceType!
+}
+
+type PriceType {
+  id: ID! @unique
+  name: String! @unique
+}
+
+type Currency {
+  id: ID! @unique
+  symbol: String!
+  name: String! @unique
+  name_plural: String!
+  country: Country!
+}
+
+type Country {
+  id: ID! @unique
+  currency: Currency! @unique
+  timezone: Timezone!
+  languages: [Language!]!
+}
+
+type Timezone {
+  id: ID! @unique
+  name: String! @unique
+  current_time: String!
+  code: String
+  isDaylightSaving: Boolean
+  country: Country!
+}
+
+type Language {
+  id: ID! @unique
+  code: String! @unique
+  name: String! @unique
+  countries: [Country!]!
+}
+
+type Preference {
+  id: ID! @unique
+  country: Country
+  customer: Customer!
+}
+
 enum Unit {
   PERCENT
   NZD
@@ -131,33 +210,3 @@ enum Status {
   PAY_AT_CHECKOUT
   WAIVED
 }
-
-enum BED {
-  KINGSIZE
-  QUEENSIZE
-  SINGLE
-  BUNK
-  EXTRA
-}
-
-enum Category {
-  FAMILY
-  WORK
-  COUPLE
-  SOLO
-  PET
-}
-
-enum FacilityType {
-  COMPLIMENTARY
-  BASIC
-  LEISURE
-  WORK
-  SAFETY
-  KIDS
-}
-
-
-
-
-

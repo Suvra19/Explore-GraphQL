@@ -7,7 +7,7 @@ class Property extends Component {
         return (
             <div>
                 <div>
-                    {this.props.property.hotel.name} - {this.props.property.name}
+                    {this.props.property.name}
                 </div>
                 <div>
                     {this.props.property.about}
@@ -24,11 +24,10 @@ class Property extends Component {
                     {this.props.property.address.city},
                     {this.props.property.address.country}
                 </div>
-                <div>
+                {/* <div>
                     Rooms:
                     { this.props.property.rooms.map(room => <Room key={room.id} room={room}/>)}
-                </div>
-
+                </div> */}
             </div>
         )
     }
