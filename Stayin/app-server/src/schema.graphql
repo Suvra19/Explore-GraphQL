@@ -1,13 +1,16 @@
-# import Customer, Property, Category, Facility, FacilityType AddressCreateInput, PropertyCreatephotosInput, AddressCreateOneInput, RoomCreateManyWithoutPropertyInput, PolicyCreateManyWithoutPropertiesInput, CategoryCreateManyWithoutPropertiesInput, PropertyFacilityCreateManyWithoutPropertyInput, PropertyCreateOneWithoutRoomsInput,PriceCreateManyInput, BedCreateManyWithoutRoomsInput, RoomFacilityCreateManyWithoutRoomInput from "./generated/prisma.graphql"
+# import Customer, Property, Category, Facility, FacilityType, Room, AddressCreateInput, PropertyCreatephotosInput, AddressCreateOneInput, RoomCreateManyWithoutPropertyInput, PolicyCreateManyWithoutPropertiesInput, CategoryCreateManyWithoutPropertiesInput, PropertyFacilityCreateManyWithoutPropertyInput, PropertyCreateOneWithoutRoomsInput, PriceCreateManyInput, BedCreateManyWithoutRoomsInput, RoomFacilityCreateManyWithoutRoomInput from "./generated/prisma.graphql"
 
 type Query {
     findProperties(name: String, city: String, tripType: String, checkIn: String, checkOut: String, adults: Int, kids: Int, infants: Int, petFriendly: Boolean, first: Int, skip: Int): [Property!]!
     findCustomer(email: String!): Customer
     fetchPolicies(id: ID, policy: String): [Policy!]!
     fetchCategories(id: ID, name: String): [Category!]!
-    fetchFacilities(id: ID, name: String): [Facility!]!
+    fetchFacilities(id: ID, name: String, type: String): [Facility!]!
     fetchFacilityTypes(id: ID, name: String): [FacilityType!]!
     fetchOneProperty(id: ID!): Property
+    fetchPriceTypes(id: ID, name: String): [PriceType!]!
+    fetchBedTypes(id: ID, name: String): [BedType!]!
+    fetchCurrencies(id: ID, symbol: String): [Currency!]!
 }
 
 type Mutation {
@@ -15,7 +18,10 @@ type Mutation {
     customerLogin(email: String!, password: String!): CustomerAuthPayload
     updateCustomerInfo(email: String, password: String, address: AddressCreateInput, phone: String): Customer
     createProperty(name: String!, about: String, logo: String, phone: String!, email: String!, photos: PropertyCreatephotosInput, address: AddressCreateOneInput!, rooms: RoomCreateManyWithoutPropertyInput, policies: PolicyCreateManyWithoutPropertiesInput, categories: CategoryCreateManyWithoutPropertiesInput, facilties: PropertyFacilityCreateManyWithoutPropertyInput): Property
-    createRoom(name: String, property: PropertyCreateOneWithoutRoomsInput!, prices: PriceCreateManyInput!, beds: BedCreateManyWithoutRoomsInput!, facilties: RoomFacilityCreateManyWithoutRoomInput)
+    createRoom(name: String, property: String, prices: [RoomPriceCreateInput!]!, beds:[RoomBedCreateInput!]!, facilities: [String!]!): Room
+    #createRoom(name: String, property: ID!, prices: [RoomPriceCreateInput!]!): Room
+    # createRoom(name: String, property: PropertyCreateOneWithoutRoomsInput!, prices: PriceCreateManyInput!, beds: BedCreateManyWithoutRoomsInput!, facilties: RoomFacilityCreateManyWithoutRoomInput): Room
+
     # updateBasicHotelInfo(id: ID!, name: String, about: String, logo: String): Hotel
     # createPropertyForHotel(name: String!, hotel: ID!, address: AddressCreateInput!, phone: String!, email: String!): PropertyAuthPayload
     #createRoomForProperty(hotel: ID!, property: ID!, name: String, price: Float!, beds: [Bed!]!): Room
@@ -28,4 +34,15 @@ type CustomerAuthPayload {
 
 type PropertyAuthPayload {
     property: Property
+}
+
+input RoomPriceCreateInput {
+    amount: Float!
+    currency: String!
+    type: String!
+}
+
+input RoomBedCreateInput {
+    type: String!
+    quantity: Int!
 }

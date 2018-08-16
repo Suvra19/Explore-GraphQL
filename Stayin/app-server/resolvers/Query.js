@@ -84,8 +84,12 @@ fetchFacilities = (parent, args, context, info) => {
     let where = {}
     if (args.id) {
         where['id'] = args.id
-    } else if (args.policy) {
+    } else if (args.name) {
         where['name'] = args.name
+    } else if (args.type) {
+        where['type'] = {
+            'name': args.type
+        }
     } else {
         where['name_not'] = "" 
     }
@@ -99,7 +103,7 @@ fetchFacilityTypes = (parent, args, context, info) => {
     let where = {}
     if (args.id) {
         where['id'] = args.id
-    } else if (args.policy) {
+    } else if (args.name) {
         where['name'] = args.name
     } else {
         where['name_not'] = "" 
@@ -110,6 +114,50 @@ fetchFacilityTypes = (parent, args, context, info) => {
     }, info)
 }
 
+fetchPriceTypes = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.name) {
+        where['name'] = args.name
+    } else {
+        where['name_not'] = "" 
+    }
+
+    return context.prisma.query.priceTypes({
+        where: where
+    }, info)
+}
+
+fetchBedTypes = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.name) {
+        where['name'] = args.name
+    } else {
+        where['name_not'] = "" 
+    }
+
+    return context.prisma.query.bedTypes({
+        where: where
+    }, info)
+}
+
+fetchCurrencies = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.symbol) {
+        where['symbol'] = args.symbol
+    } else {
+        where['symbol_not'] = ""
+    }
+
+    return context.prisma.query.currencies({
+        where: where
+    }, info)
+}
 
 module.exports = {
     findProperties,
@@ -119,4 +167,7 @@ module.exports = {
     fetchFacilities,
     fetchFacilityTypes,
     fetchOneProperty,
+    fetchPriceTypes,
+    fetchBedTypes,
+    fetchCurrencies,
 }

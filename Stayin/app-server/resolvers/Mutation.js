@@ -82,12 +82,81 @@ createProperty = (parent, args, context, info) => {
 
 createRoom = (parent, args, context, info) => {
     //Authenticate ownership
-    let data = getQueryDataFromArgs(args)
-    if (!data.hasOwnProperty('property') || !data.hasOwnProperty('prices') || !data.hasOwnProperty('beds')) {
-        return new Error(`Required field(s) missing in ${JSON.stringify(data)}`)
+    console.log(`Before ${JSON.stringify(args)}`)
+    const filteredData = getQueryDataFromArgs(args)
+    console.log(`After ${JSON.stringify(filteredData)}`)
+    if (!filteredData.hasOwnProperty('property') || !filteredData.hasOwnProperty('prices') || !filteredData.hasOwnProperty('beds')) {
+        return new Error('Required field(s) missing')
     }
+    let propertyData = {
+        connect: {
+            id: filteredData.property
+        }
+    }
+    let priceData = {
+        create: []
+    }
+    let bedData = {
+        create: []
+    }
+    let facilityData = {
+        connect: []
+    }
+    const prices = filteredData.prices.slice()
+    prices.forEach(price => {
+        if (price.amount !== '') {
+            let { amount, currency, type } = price
+            let priceEntry = {
+                amount: amount,
+                currency: {
+                    connect: {
+                        id: currency
+                    }
+                },
+                type: {
+                    connect: {
+                        id: type
+                    }
+                }
+            }
+            priceData.create.push(priceEntry)
+        }
+        
+    })
+    const beds = filteredData.beds.slice()
+    beds.forEach(bed => {
+        if (bed.quantity !== 0) {
+            const quantity = bed.quantity
+            const type = {
+            connect: {
+                id: bed.type
+            }
+        }
+        bedData.create.push({
+            quantity,
+            type
+        })    
+    }
+    })
+    const facilities = filteredData.facilities ? filteredData.facilities.slice() : []
+    facilities.forEach(facility => {
+        if (facility !== '') {
+            facilityData.connect.push({
+                id: facility
+            })
+        }
+      
+    })
+    const roomData = {
+        ...filteredData,
+        property: propertyData,
+        prices: priceData,
+        beds: bedData,
+        facilities: facilityData
+    }
+    console.log(`${JSON.stringify(roomData)}`)
     return context.prisma.mutation.createRoom({
-        data: data
+        data: roomData
     }, info)
 }
 
@@ -152,47 +221,48 @@ createRoom = (parent, args, context, info) => {
 //     }
 // }
 
-createRoomForProperty = async (parent, args, context, info) => {
-    const hotelOwner = getCustomerId(context)
-    const hotelAndPropertyExists = context.prisma.exists.Property({
-        id: args.property,
-        hotel: {
-            id: args.hotel
-        },
-    })
-    const customerOwnsHotel = context.prisma.exists.Hotel({
-        id: args.hotel,
-        owner: {
-            id: hotelOwner
-        }
-    })
-    if (!await hotelAndPropertyExists) {
-        throw new Error(`Property with name ${args.name} does not exist for this hotel`)
-    }
-    if (!await customerOwnsHotel) {
-        throw new Error(`Customer does not own this hotel`)
-    }
+// createRoomForProperty = async (parent, args, context, info) => {
+//     const hotelOwner = getCustomerId(context)
+//     const hotelAndPropertyExists = context.prisma.exists.Property({
+//         id: args.property,
+//         hotel: {
+//             id: args.hotel
+//         },
+//     })
+//     const customerOwnsHotel = context.prisma.exists.Hotel({
+//         id: args.hotel,
+//         owner: {
+//             id: hotelOwner
+//         }
+//     })
+//     if (!await hotelAndPropertyExists) {
+//         throw new Error(`Property with name ${args.name} does not exist for this hotel`)
+//     }
+//     if (!await customerOwnsHotel) {
+//         throw new Error(`Customer does not own this hotel`)
+//     }
     
-    let input = {
-        ...args
-    }
-    input['property'] = {
-        connect: {
-            id: args.property
-        }
-    }
-    input['beds'] = {
-        set: args.beds
-    }
-    let {hotel, ...data} = input
-    return context.prisma.mutation.createRoom({
-        data: data
-    }, info)
-}
+//     let input = {
+//         ...args
+//     }
+//     input['property'] = {
+//         connect: {
+//             id: args.property
+//         }
+//     }
+//     input['beds'] = {
+//         set: args.beds
+//     }
+//     let {hotel, ...data} = input
+//     return context.prisma.mutation.createRoom({
+//         data: data
+//     }, info)
+// }
 
 module.exports = {
     customerSignup,
     customerLogin,
     createProperty,
     updateCustomerInfo,
+    createRoom,
 }

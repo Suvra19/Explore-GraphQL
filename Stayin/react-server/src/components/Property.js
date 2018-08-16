@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { AUTH_TOKEN } from '../constants';
-import Room from './Room'
+import Rooms from './Rooms'
 
 class Property extends Component {
     render() {

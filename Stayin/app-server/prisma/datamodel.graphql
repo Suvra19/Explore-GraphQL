@@ -44,8 +44,9 @@ type Room {
   photos: [String!]!
   prices: [Price!]!
   beds: [Bed!]! @relation(name: "RoomBedSetup")
-  facilities: [RoomFacility!]! @relation(name: "RoomFacilities")
+  facilities: [Facility!]! @relation(name: "RoomFacilities")
   bookings: [Booking!]!
+  active: Boolean @default(value: "true")
 }
 
 type Bed {
@@ -66,7 +67,7 @@ type Facility {
   name: String! @unique
   type: FacilityType! @relation(name: "FacilityTypeRel")
   properties: [PropertyFacility!]! 
-  rooms: [RoomFacility!]!
+  rooms: [Room!]! @relation(name: "RoomFacilities")
 }
 
 type PropertyFacility {
@@ -77,13 +78,13 @@ type PropertyFacility {
   isComplimentary: Boolean @default(value: "false")
 }
 
-type RoomFacility {
-  id: ID! @unique
-  room: Room! @relation(name: "RoomFacilities")
-  facility: Facility!
-  description: String!
-  isComplimentary: Boolean @default(value: "false")
-}
+# type RoomFacility {
+#   id: ID! @unique
+#   room: Room! @relation(name: "RoomFacilities")
+#   facility: Facility!
+#   description: String!
+#   isComplimentary: Boolean @default(value: "false")
+# }
 
 type FacilityType {
   id: ID! @unique
@@ -171,8 +172,9 @@ type Currency {
 
 type Country {
   id: ID! @unique
+  name: String! @unique
   currency: Currency! @unique
-  timezone: Timezone!
+  timezone: Timezone
   languages: [Language!]!
 }
 

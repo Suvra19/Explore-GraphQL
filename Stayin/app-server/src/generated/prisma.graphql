@@ -1,5 +1,5 @@
 # source: http://192.168.99.100:4466
-# timestamp: Thu Aug 09 2018 18:31:40 GMT+1200 (New Zealand Standard Time)
+# timestamp: Wed Aug 15 2018 18:23:36 GMT+1200 (New Zealand Standard Time)
 
 type Address implements Node {
   id: ID!
@@ -434,10 +434,6 @@ type AggregateReview {
 }
 
 type AggregateRoom {
-  count: Int!
-}
-
-type AggregateRoomFacility {
   count: Int!
 }
 
@@ -1474,8 +1470,9 @@ input CategoryWhereUniqueInput {
 
 type Country implements Node {
   id: ID!
+  name: String!
   currency(where: CurrencyWhereInput): Currency!
-  timezone(where: TimezoneWhereInput): Timezone!
+  timezone(where: TimezoneWhereInput): Timezone
   languages(where: LanguageWhereInput, orderBy: LanguageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Language!]
 }
 
@@ -1490,8 +1487,9 @@ type CountryConnection {
 }
 
 input CountryCreateInput {
+  name: String!
   currency: CurrencyCreateOneWithoutCountryInput!
-  timezone: TimezoneCreateOneWithoutCountryInput!
+  timezone: TimezoneCreateOneWithoutCountryInput
   languages: LanguageCreateManyWithoutCountriesInput
 }
 
@@ -1516,16 +1514,19 @@ input CountryCreateOneWithoutTimezoneInput {
 }
 
 input CountryCreateWithoutCurrencyInput {
-  timezone: TimezoneCreateOneWithoutCountryInput!
+  name: String!
+  timezone: TimezoneCreateOneWithoutCountryInput
   languages: LanguageCreateManyWithoutCountriesInput
 }
 
 input CountryCreateWithoutLanguagesInput {
+  name: String!
   currency: CurrencyCreateOneWithoutCountryInput!
-  timezone: TimezoneCreateOneWithoutCountryInput!
+  timezone: TimezoneCreateOneWithoutCountryInput
 }
 
 input CountryCreateWithoutTimezoneInput {
+  name: String!
   currency: CurrencyCreateOneWithoutCountryInput!
   languages: LanguageCreateManyWithoutCountriesInput
 }
@@ -1542,6 +1543,8 @@ type CountryEdge {
 enum CountryOrderByInput {
   id_ASC
   id_DESC
+  name_ASC
+  name_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -1550,6 +1553,7 @@ enum CountryOrderByInput {
 
 type CountryPreviousValues {
   id: ID!
+  name: String!
 }
 
 type CountrySubscriptionPayload {
@@ -1592,12 +1596,14 @@ input CountrySubscriptionWhereInput {
 }
 
 input CountryUpdateDataInput {
+  name: String
   currency: CurrencyUpdateOneWithoutCountryInput
   timezone: TimezoneUpdateOneWithoutCountryInput
   languages: LanguageUpdateManyWithoutCountriesInput
 }
 
 input CountryUpdateInput {
+  name: String
   currency: CurrencyUpdateOneWithoutCountryInput
   timezone: TimezoneUpdateOneWithoutCountryInput
   languages: LanguageUpdateManyWithoutCountriesInput
@@ -1638,16 +1644,19 @@ input CountryUpdateOneWithoutTimezoneInput {
 }
 
 input CountryUpdateWithoutCurrencyDataInput {
+  name: String
   timezone: TimezoneUpdateOneWithoutCountryInput
   languages: LanguageUpdateManyWithoutCountriesInput
 }
 
 input CountryUpdateWithoutLanguagesDataInput {
+  name: String
   currency: CurrencyUpdateOneWithoutCountryInput
   timezone: TimezoneUpdateOneWithoutCountryInput
 }
 
 input CountryUpdateWithoutTimezoneDataInput {
+  name: String
   currency: CurrencyUpdateOneWithoutCountryInput
   languages: LanguageUpdateManyWithoutCountriesInput
 }
@@ -1727,6 +1736,46 @@ input CountryWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
   currency: CurrencyWhereInput
   timezone: TimezoneWhereInput
   languages_every: LanguageWhereInput
@@ -1739,6 +1788,7 @@ input CountryWhereInput {
 
 input CountryWhereUniqueInput {
   id: ID
+  name: String
 }
 
 type Currency implements Node {
@@ -2722,7 +2772,7 @@ type Facility implements Node {
   name: String!
   type(where: FacilityTypeWhereInput): FacilityType!
   properties(where: PropertyFacilityWhereInput, orderBy: PropertyFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [PropertyFacility!]
-  rooms(where: RoomFacilityWhereInput, orderBy: RoomFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RoomFacility!]
+  rooms(where: RoomWhereInput, orderBy: RoomOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Room!]
 }
 
 """A connection to a list of items."""
@@ -2739,7 +2789,12 @@ input FacilityCreateInput {
   name: String!
   type: FacilityTypeCreateOneWithoutFacilitiesInput!
   properties: PropertyFacilityCreateManyWithoutFacilityInput
-  rooms: RoomFacilityCreateManyWithoutFacilityInput
+  rooms: RoomCreateManyWithoutFacilitiesInput
+}
+
+input FacilityCreateManyWithoutRoomsInput {
+  create: [FacilityCreateWithoutRoomsInput!]
+  connect: [FacilityWhereUniqueInput!]
 }
 
 input FacilityCreateManyWithoutTypeInput {
@@ -2752,15 +2807,10 @@ input FacilityCreateOneWithoutPropertiesInput {
   connect: FacilityWhereUniqueInput
 }
 
-input FacilityCreateOneWithoutRoomsInput {
-  create: FacilityCreateWithoutRoomsInput
-  connect: FacilityWhereUniqueInput
-}
-
 input FacilityCreateWithoutPropertiesInput {
   name: String!
   type: FacilityTypeCreateOneWithoutFacilitiesInput!
-  rooms: RoomFacilityCreateManyWithoutFacilityInput
+  rooms: RoomCreateManyWithoutFacilitiesInput
 }
 
 input FacilityCreateWithoutRoomsInput {
@@ -2772,7 +2822,7 @@ input FacilityCreateWithoutRoomsInput {
 input FacilityCreateWithoutTypeInput {
   name: String!
   properties: PropertyFacilityCreateManyWithoutFacilityInput
-  rooms: RoomFacilityCreateManyWithoutFacilityInput
+  rooms: RoomCreateManyWithoutFacilitiesInput
 }
 
 """An edge in a connection."""
@@ -3058,7 +3108,16 @@ input FacilityUpdateInput {
   name: String
   type: FacilityTypeUpdateOneWithoutFacilitiesInput
   properties: PropertyFacilityUpdateManyWithoutFacilityInput
-  rooms: RoomFacilityUpdateManyWithoutFacilityInput
+  rooms: RoomUpdateManyWithoutFacilitiesInput
+}
+
+input FacilityUpdateManyWithoutRoomsInput {
+  create: [FacilityCreateWithoutRoomsInput!]
+  connect: [FacilityWhereUniqueInput!]
+  disconnect: [FacilityWhereUniqueInput!]
+  delete: [FacilityWhereUniqueInput!]
+  update: [FacilityUpdateWithWhereUniqueWithoutRoomsInput!]
+  upsert: [FacilityUpsertWithWhereUniqueWithoutRoomsInput!]
 }
 
 input FacilityUpdateManyWithoutTypeInput {
@@ -3078,18 +3137,10 @@ input FacilityUpdateOneWithoutPropertiesInput {
   upsert: FacilityUpsertWithoutPropertiesInput
 }
 
-input FacilityUpdateOneWithoutRoomsInput {
-  create: FacilityCreateWithoutRoomsInput
-  connect: FacilityWhereUniqueInput
-  delete: Boolean
-  update: FacilityUpdateWithoutRoomsDataInput
-  upsert: FacilityUpsertWithoutRoomsInput
-}
-
 input FacilityUpdateWithoutPropertiesDataInput {
   name: String
   type: FacilityTypeUpdateOneWithoutFacilitiesInput
-  rooms: RoomFacilityUpdateManyWithoutFacilityInput
+  rooms: RoomUpdateManyWithoutFacilitiesInput
 }
 
 input FacilityUpdateWithoutRoomsDataInput {
@@ -3101,7 +3152,12 @@ input FacilityUpdateWithoutRoomsDataInput {
 input FacilityUpdateWithoutTypeDataInput {
   name: String
   properties: PropertyFacilityUpdateManyWithoutFacilityInput
-  rooms: RoomFacilityUpdateManyWithoutFacilityInput
+  rooms: RoomUpdateManyWithoutFacilitiesInput
+}
+
+input FacilityUpdateWithWhereUniqueWithoutRoomsInput {
+  where: FacilityWhereUniqueInput!
+  data: FacilityUpdateWithoutRoomsDataInput!
 }
 
 input FacilityUpdateWithWhereUniqueWithoutTypeInput {
@@ -3114,7 +3170,8 @@ input FacilityUpsertWithoutPropertiesInput {
   create: FacilityCreateWithoutPropertiesInput!
 }
 
-input FacilityUpsertWithoutRoomsInput {
+input FacilityUpsertWithWhereUniqueWithoutRoomsInput {
+  where: FacilityWhereUniqueInput!
   update: FacilityUpdateWithoutRoomsDataInput!
   create: FacilityCreateWithoutRoomsInput!
 }
@@ -3218,9 +3275,9 @@ input FacilityWhereInput {
   properties_every: PropertyFacilityWhereInput
   properties_some: PropertyFacilityWhereInput
   properties_none: PropertyFacilityWhereInput
-  rooms_every: RoomFacilityWhereInput
-  rooms_some: RoomFacilityWhereInput
-  rooms_none: RoomFacilityWhereInput
+  rooms_every: RoomWhereInput
+  rooms_some: RoomWhereInput
+  rooms_none: RoomWhereInput
 }
 
 input FacilityWhereUniqueInput {
@@ -3514,7 +3571,6 @@ type Mutation {
   createBedType(data: BedTypeCreateInput!): BedType!
   createFacility(data: FacilityCreateInput!): Facility!
   createPropertyFacility(data: PropertyFacilityCreateInput!): PropertyFacility!
-  createRoomFacility(data: RoomFacilityCreateInput!): RoomFacility!
   createFacilityType(data: FacilityTypeCreateInput!): FacilityType!
   createPolicy(data: PolicyCreateInput!): Policy!
   createReview(data: ReviewCreateInput!): Review!
@@ -3538,7 +3594,6 @@ type Mutation {
   updateBedType(data: BedTypeUpdateInput!, where: BedTypeWhereUniqueInput!): BedType
   updateFacility(data: FacilityUpdateInput!, where: FacilityWhereUniqueInput!): Facility
   updatePropertyFacility(data: PropertyFacilityUpdateInput!, where: PropertyFacilityWhereUniqueInput!): PropertyFacility
-  updateRoomFacility(data: RoomFacilityUpdateInput!, where: RoomFacilityWhereUniqueInput!): RoomFacility
   updateFacilityType(data: FacilityTypeUpdateInput!, where: FacilityTypeWhereUniqueInput!): FacilityType
   updatePolicy(data: PolicyUpdateInput!, where: PolicyWhereUniqueInput!): Policy
   updateReview(data: ReviewUpdateInput!, where: ReviewWhereUniqueInput!): Review
@@ -3562,7 +3617,6 @@ type Mutation {
   deleteBedType(where: BedTypeWhereUniqueInput!): BedType
   deleteFacility(where: FacilityWhereUniqueInput!): Facility
   deletePropertyFacility(where: PropertyFacilityWhereUniqueInput!): PropertyFacility
-  deleteRoomFacility(where: RoomFacilityWhereUniqueInput!): RoomFacility
   deleteFacilityType(where: FacilityTypeWhereUniqueInput!): FacilityType
   deletePolicy(where: PolicyWhereUniqueInput!): Policy
   deleteReview(where: ReviewWhereUniqueInput!): Review
@@ -3586,7 +3640,6 @@ type Mutation {
   upsertBedType(where: BedTypeWhereUniqueInput!, create: BedTypeCreateInput!, update: BedTypeUpdateInput!): BedType!
   upsertFacility(where: FacilityWhereUniqueInput!, create: FacilityCreateInput!, update: FacilityUpdateInput!): Facility!
   upsertPropertyFacility(where: PropertyFacilityWhereUniqueInput!, create: PropertyFacilityCreateInput!, update: PropertyFacilityUpdateInput!): PropertyFacility!
-  upsertRoomFacility(where: RoomFacilityWhereUniqueInput!, create: RoomFacilityCreateInput!, update: RoomFacilityUpdateInput!): RoomFacility!
   upsertFacilityType(where: FacilityTypeWhereUniqueInput!, create: FacilityTypeCreateInput!, update: FacilityTypeUpdateInput!): FacilityType!
   upsertPolicy(where: PolicyWhereUniqueInput!, create: PolicyCreateInput!, update: PolicyUpdateInput!): Policy!
   upsertReview(where: ReviewWhereUniqueInput!, create: ReviewCreateInput!, update: ReviewUpdateInput!): Review!
@@ -3610,7 +3663,6 @@ type Mutation {
   updateManyBedTypes(data: BedTypeUpdateInput!, where: BedTypeWhereInput): BatchPayload!
   updateManyFacilities(data: FacilityUpdateInput!, where: FacilityWhereInput): BatchPayload!
   updateManyPropertyFacilities(data: PropertyFacilityUpdateInput!, where: PropertyFacilityWhereInput): BatchPayload!
-  updateManyRoomFacilities(data: RoomFacilityUpdateInput!, where: RoomFacilityWhereInput): BatchPayload!
   updateManyFacilityTypes(data: FacilityTypeUpdateInput!, where: FacilityTypeWhereInput): BatchPayload!
   updateManyPolicies(data: PolicyUpdateInput!, where: PolicyWhereInput): BatchPayload!
   updateManyReviews(data: ReviewUpdateInput!, where: ReviewWhereInput): BatchPayload!
@@ -3634,7 +3686,6 @@ type Mutation {
   deleteManyBedTypes(where: BedTypeWhereInput): BatchPayload!
   deleteManyFacilities(where: FacilityWhereInput): BatchPayload!
   deleteManyPropertyFacilities(where: PropertyFacilityWhereInput): BatchPayload!
-  deleteManyRoomFacilities(where: RoomFacilityWhereInput): BatchPayload!
   deleteManyFacilityTypes(where: FacilityTypeWhereInput): BatchPayload!
   deleteManyPolicies(where: PolicyWhereInput): BatchPayload!
   deleteManyReviews(where: ReviewWhereInput): BatchPayload!
@@ -6025,7 +6076,6 @@ type Query {
   bedTypes(where: BedTypeWhereInput, orderBy: BedTypeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BedType]!
   facilities(where: FacilityWhereInput, orderBy: FacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Facility]!
   propertyFacilities(where: PropertyFacilityWhereInput, orderBy: PropertyFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [PropertyFacility]!
-  roomFacilities(where: RoomFacilityWhereInput, orderBy: RoomFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RoomFacility]!
   facilityTypes(where: FacilityTypeWhereInput, orderBy: FacilityTypeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FacilityType]!
   policies(where: PolicyWhereInput, orderBy: PolicyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Policy]!
   reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Review]!
@@ -6049,7 +6099,6 @@ type Query {
   bedType(where: BedTypeWhereUniqueInput!): BedType
   facility(where: FacilityWhereUniqueInput!): Facility
   propertyFacility(where: PropertyFacilityWhereUniqueInput!): PropertyFacility
-  roomFacility(where: RoomFacilityWhereUniqueInput!): RoomFacility
   facilityType(where: FacilityTypeWhereUniqueInput!): FacilityType
   policy(where: PolicyWhereUniqueInput!): Policy
   review(where: ReviewWhereUniqueInput!): Review
@@ -6073,7 +6122,6 @@ type Query {
   bedTypesConnection(where: BedTypeWhereInput, orderBy: BedTypeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BedTypeConnection!
   facilitiesConnection(where: FacilityWhereInput, orderBy: FacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FacilityConnection!
   propertyFacilitiesConnection(where: PropertyFacilityWhereInput, orderBy: PropertyFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PropertyFacilityConnection!
-  roomFacilitiesConnection(where: RoomFacilityWhereInput, orderBy: RoomFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RoomFacilityConnection!
   facilityTypesConnection(where: FacilityTypeWhereInput, orderBy: FacilityTypeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FacilityTypeConnection!
   policiesConnection(where: PolicyWhereInput, orderBy: PolicyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PolicyConnection!
   reviewsConnection(where: ReviewWhereInput, orderBy: ReviewOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ReviewConnection!
@@ -6498,8 +6546,9 @@ type Room implements Node {
   photos: [String!]!
   prices(where: PriceWhereInput, orderBy: PriceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Price!]
   beds(where: BedWhereInput, orderBy: BedOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Bed!]
-  facilities(where: RoomFacilityWhereInput, orderBy: RoomFacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RoomFacility!]
+  facilities(where: FacilityWhereInput, orderBy: FacilityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Facility!]
   bookings(where: BookingWhereInput, orderBy: BookingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Booking!]
+  active: Boolean
 }
 
 """A connection to a list of items."""
@@ -6514,11 +6563,12 @@ type RoomConnection {
 
 input RoomCreateInput {
   name: String
+  active: Boolean
   photos: RoomCreatephotosInput
   property: PropertyCreateOneWithoutRoomsInput!
   prices: PriceCreateManyInput
   beds: BedCreateManyWithoutRoomsInput
-  facilities: RoomFacilityCreateManyWithoutRoomInput
+  facilities: FacilityCreateManyWithoutRoomsInput
   bookings: BookingCreateManyWithoutRoomsInput
 }
 
@@ -6532,14 +6582,14 @@ input RoomCreateManyWithoutBookingsInput {
   connect: [RoomWhereUniqueInput!]
 }
 
-input RoomCreateManyWithoutPropertyInput {
-  create: [RoomCreateWithoutPropertyInput!]
+input RoomCreateManyWithoutFacilitiesInput {
+  create: [RoomCreateWithoutFacilitiesInput!]
   connect: [RoomWhereUniqueInput!]
 }
 
-input RoomCreateOneWithoutFacilitiesInput {
-  create: RoomCreateWithoutFacilitiesInput
-  connect: RoomWhereUniqueInput
+input RoomCreateManyWithoutPropertyInput {
+  create: [RoomCreateWithoutPropertyInput!]
+  connect: [RoomWhereUniqueInput!]
 }
 
 input RoomCreatephotosInput {
@@ -6548,24 +6598,27 @@ input RoomCreatephotosInput {
 
 input RoomCreateWithoutBedsInput {
   name: String
+  active: Boolean
   photos: RoomCreatephotosInput
   property: PropertyCreateOneWithoutRoomsInput!
   prices: PriceCreateManyInput
-  facilities: RoomFacilityCreateManyWithoutRoomInput
+  facilities: FacilityCreateManyWithoutRoomsInput
   bookings: BookingCreateManyWithoutRoomsInput
 }
 
 input RoomCreateWithoutBookingsInput {
   name: String
+  active: Boolean
   photos: RoomCreatephotosInput
   property: PropertyCreateOneWithoutRoomsInput!
   prices: PriceCreateManyInput
   beds: BedCreateManyWithoutRoomsInput
-  facilities: RoomFacilityCreateManyWithoutRoomInput
+  facilities: FacilityCreateManyWithoutRoomsInput
 }
 
 input RoomCreateWithoutFacilitiesInput {
   name: String
+  active: Boolean
   photos: RoomCreatephotosInput
   property: PropertyCreateOneWithoutRoomsInput!
   prices: PriceCreateManyInput
@@ -6575,10 +6628,11 @@ input RoomCreateWithoutFacilitiesInput {
 
 input RoomCreateWithoutPropertyInput {
   name: String
+  active: Boolean
   photos: RoomCreatephotosInput
   prices: PriceCreateManyInput
   beds: BedCreateManyWithoutRoomsInput
-  facilities: RoomFacilityCreateManyWithoutRoomInput
+  facilities: FacilityCreateManyWithoutRoomsInput
   bookings: BookingCreateManyWithoutRoomsInput
 }
 
@@ -6591,285 +6645,13 @@ type RoomEdge {
   cursor: String!
 }
 
-type RoomFacility implements Node {
-  id: ID!
-  room(where: RoomWhereInput): Room!
-  facility(where: FacilityWhereInput): Facility!
-  description: String!
-  isComplimentary: Boolean
-}
-
-"""A connection to a list of items."""
-type RoomFacilityConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [RoomFacilityEdge]!
-  aggregate: AggregateRoomFacility!
-}
-
-input RoomFacilityCreateInput {
-  description: String!
-  isComplimentary: Boolean
-  room: RoomCreateOneWithoutFacilitiesInput!
-  facility: FacilityCreateOneWithoutRoomsInput!
-}
-
-input RoomFacilityCreateManyWithoutFacilityInput {
-  create: [RoomFacilityCreateWithoutFacilityInput!]
-  connect: [RoomFacilityWhereUniqueInput!]
-}
-
-input RoomFacilityCreateManyWithoutRoomInput {
-  create: [RoomFacilityCreateWithoutRoomInput!]
-  connect: [RoomFacilityWhereUniqueInput!]
-}
-
-input RoomFacilityCreateWithoutFacilityInput {
-  description: String!
-  isComplimentary: Boolean
-  room: RoomCreateOneWithoutFacilitiesInput!
-}
-
-input RoomFacilityCreateWithoutRoomInput {
-  description: String!
-  isComplimentary: Boolean
-  facility: FacilityCreateOneWithoutRoomsInput!
-}
-
-"""An edge in a connection."""
-type RoomFacilityEdge {
-  """The item at the end of the edge."""
-  node: RoomFacility!
-
-  """A cursor for use in pagination."""
-  cursor: String!
-}
-
-enum RoomFacilityOrderByInput {
-  id_ASC
-  id_DESC
-  description_ASC
-  description_DESC
-  isComplimentary_ASC
-  isComplimentary_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
-}
-
-type RoomFacilityPreviousValues {
-  id: ID!
-  description: String!
-  isComplimentary: Boolean
-}
-
-type RoomFacilitySubscriptionPayload {
-  mutation: MutationType!
-  node: RoomFacility
-  updatedFields: [String!]
-  previousValues: RoomFacilityPreviousValues
-}
-
-input RoomFacilitySubscriptionWhereInput {
-  """Logical AND on all given filters."""
-  AND: [RoomFacilitySubscriptionWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [RoomFacilitySubscriptionWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [RoomFacilitySubscriptionWhereInput!]
-
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: RoomFacilityWhereInput
-}
-
-input RoomFacilityUpdateInput {
-  description: String
-  isComplimentary: Boolean
-  room: RoomUpdateOneWithoutFacilitiesInput
-  facility: FacilityUpdateOneWithoutRoomsInput
-}
-
-input RoomFacilityUpdateManyWithoutFacilityInput {
-  create: [RoomFacilityCreateWithoutFacilityInput!]
-  connect: [RoomFacilityWhereUniqueInput!]
-  disconnect: [RoomFacilityWhereUniqueInput!]
-  delete: [RoomFacilityWhereUniqueInput!]
-  update: [RoomFacilityUpdateWithWhereUniqueWithoutFacilityInput!]
-  upsert: [RoomFacilityUpsertWithWhereUniqueWithoutFacilityInput!]
-}
-
-input RoomFacilityUpdateManyWithoutRoomInput {
-  create: [RoomFacilityCreateWithoutRoomInput!]
-  connect: [RoomFacilityWhereUniqueInput!]
-  disconnect: [RoomFacilityWhereUniqueInput!]
-  delete: [RoomFacilityWhereUniqueInput!]
-  update: [RoomFacilityUpdateWithWhereUniqueWithoutRoomInput!]
-  upsert: [RoomFacilityUpsertWithWhereUniqueWithoutRoomInput!]
-}
-
-input RoomFacilityUpdateWithoutFacilityDataInput {
-  description: String
-  isComplimentary: Boolean
-  room: RoomUpdateOneWithoutFacilitiesInput
-}
-
-input RoomFacilityUpdateWithoutRoomDataInput {
-  description: String
-  isComplimentary: Boolean
-  facility: FacilityUpdateOneWithoutRoomsInput
-}
-
-input RoomFacilityUpdateWithWhereUniqueWithoutFacilityInput {
-  where: RoomFacilityWhereUniqueInput!
-  data: RoomFacilityUpdateWithoutFacilityDataInput!
-}
-
-input RoomFacilityUpdateWithWhereUniqueWithoutRoomInput {
-  where: RoomFacilityWhereUniqueInput!
-  data: RoomFacilityUpdateWithoutRoomDataInput!
-}
-
-input RoomFacilityUpsertWithWhereUniqueWithoutFacilityInput {
-  where: RoomFacilityWhereUniqueInput!
-  update: RoomFacilityUpdateWithoutFacilityDataInput!
-  create: RoomFacilityCreateWithoutFacilityInput!
-}
-
-input RoomFacilityUpsertWithWhereUniqueWithoutRoomInput {
-  where: RoomFacilityWhereUniqueInput!
-  update: RoomFacilityUpdateWithoutRoomDataInput!
-  create: RoomFacilityCreateWithoutRoomInput!
-}
-
-input RoomFacilityWhereInput {
-  """Logical AND on all given filters."""
-  AND: [RoomFacilityWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [RoomFacilityWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [RoomFacilityWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  description: String
-
-  """All values that are not equal to given value."""
-  description_not: String
-
-  """All values that are contained in given list."""
-  description_in: [String!]
-
-  """All values that are not contained in given list."""
-  description_not_in: [String!]
-
-  """All values less than the given value."""
-  description_lt: String
-
-  """All values less than or equal the given value."""
-  description_lte: String
-
-  """All values greater than the given value."""
-  description_gt: String
-
-  """All values greater than or equal the given value."""
-  description_gte: String
-
-  """All values containing the given string."""
-  description_contains: String
-
-  """All values not containing the given string."""
-  description_not_contains: String
-
-  """All values starting with the given string."""
-  description_starts_with: String
-
-  """All values not starting with the given string."""
-  description_not_starts_with: String
-
-  """All values ending with the given string."""
-  description_ends_with: String
-
-  """All values not ending with the given string."""
-  description_not_ends_with: String
-  isComplimentary: Boolean
-
-  """All values that are not equal to given value."""
-  isComplimentary_not: Boolean
-  room: RoomWhereInput
-  facility: FacilityWhereInput
-}
-
-input RoomFacilityWhereUniqueInput {
-  id: ID
-}
-
 enum RoomOrderByInput {
   id_ASC
   id_DESC
   name_ASC
   name_DESC
+  active_ASC
+  active_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -6880,6 +6662,7 @@ type RoomPreviousValues {
   id: ID!
   name: String
   photos: [String!]!
+  active: Boolean
 }
 
 type RoomSubscriptionPayload {
@@ -6923,11 +6706,12 @@ input RoomSubscriptionWhereInput {
 
 input RoomUpdateInput {
   name: String
+  active: Boolean
   photos: RoomUpdatephotosInput
   property: PropertyUpdateOneWithoutRoomsInput
   prices: PriceUpdateManyInput
   beds: BedUpdateManyWithoutRoomsInput
-  facilities: RoomFacilityUpdateManyWithoutRoomInput
+  facilities: FacilityUpdateManyWithoutRoomsInput
   bookings: BookingUpdateManyWithoutRoomsInput
 }
 
@@ -6949,6 +6733,15 @@ input RoomUpdateManyWithoutBookingsInput {
   upsert: [RoomUpsertWithWhereUniqueWithoutBookingsInput!]
 }
 
+input RoomUpdateManyWithoutFacilitiesInput {
+  create: [RoomCreateWithoutFacilitiesInput!]
+  connect: [RoomWhereUniqueInput!]
+  disconnect: [RoomWhereUniqueInput!]
+  delete: [RoomWhereUniqueInput!]
+  update: [RoomUpdateWithWhereUniqueWithoutFacilitiesInput!]
+  upsert: [RoomUpsertWithWhereUniqueWithoutFacilitiesInput!]
+}
+
 input RoomUpdateManyWithoutPropertyInput {
   create: [RoomCreateWithoutPropertyInput!]
   connect: [RoomWhereUniqueInput!]
@@ -6958,38 +6751,33 @@ input RoomUpdateManyWithoutPropertyInput {
   upsert: [RoomUpsertWithWhereUniqueWithoutPropertyInput!]
 }
 
-input RoomUpdateOneWithoutFacilitiesInput {
-  create: RoomCreateWithoutFacilitiesInput
-  connect: RoomWhereUniqueInput
-  delete: Boolean
-  update: RoomUpdateWithoutFacilitiesDataInput
-  upsert: RoomUpsertWithoutFacilitiesInput
-}
-
 input RoomUpdatephotosInput {
   set: [String!]
 }
 
 input RoomUpdateWithoutBedsDataInput {
   name: String
+  active: Boolean
   photos: RoomUpdatephotosInput
   property: PropertyUpdateOneWithoutRoomsInput
   prices: PriceUpdateManyInput
-  facilities: RoomFacilityUpdateManyWithoutRoomInput
+  facilities: FacilityUpdateManyWithoutRoomsInput
   bookings: BookingUpdateManyWithoutRoomsInput
 }
 
 input RoomUpdateWithoutBookingsDataInput {
   name: String
+  active: Boolean
   photos: RoomUpdatephotosInput
   property: PropertyUpdateOneWithoutRoomsInput
   prices: PriceUpdateManyInput
   beds: BedUpdateManyWithoutRoomsInput
-  facilities: RoomFacilityUpdateManyWithoutRoomInput
+  facilities: FacilityUpdateManyWithoutRoomsInput
 }
 
 input RoomUpdateWithoutFacilitiesDataInput {
   name: String
+  active: Boolean
   photos: RoomUpdatephotosInput
   property: PropertyUpdateOneWithoutRoomsInput
   prices: PriceUpdateManyInput
@@ -6999,10 +6787,11 @@ input RoomUpdateWithoutFacilitiesDataInput {
 
 input RoomUpdateWithoutPropertyDataInput {
   name: String
+  active: Boolean
   photos: RoomUpdatephotosInput
   prices: PriceUpdateManyInput
   beds: BedUpdateManyWithoutRoomsInput
-  facilities: RoomFacilityUpdateManyWithoutRoomInput
+  facilities: FacilityUpdateManyWithoutRoomsInput
   bookings: BookingUpdateManyWithoutRoomsInput
 }
 
@@ -7016,14 +6805,14 @@ input RoomUpdateWithWhereUniqueWithoutBookingsInput {
   data: RoomUpdateWithoutBookingsDataInput!
 }
 
+input RoomUpdateWithWhereUniqueWithoutFacilitiesInput {
+  where: RoomWhereUniqueInput!
+  data: RoomUpdateWithoutFacilitiesDataInput!
+}
+
 input RoomUpdateWithWhereUniqueWithoutPropertyInput {
   where: RoomWhereUniqueInput!
   data: RoomUpdateWithoutPropertyDataInput!
-}
-
-input RoomUpsertWithoutFacilitiesInput {
-  update: RoomUpdateWithoutFacilitiesDataInput!
-  create: RoomCreateWithoutFacilitiesInput!
 }
 
 input RoomUpsertWithWhereUniqueWithoutBedsInput {
@@ -7036,6 +6825,12 @@ input RoomUpsertWithWhereUniqueWithoutBookingsInput {
   where: RoomWhereUniqueInput!
   update: RoomUpdateWithoutBookingsDataInput!
   create: RoomCreateWithoutBookingsInput!
+}
+
+input RoomUpsertWithWhereUniqueWithoutFacilitiesInput {
+  where: RoomWhereUniqueInput!
+  update: RoomUpdateWithoutFacilitiesDataInput!
+  create: RoomCreateWithoutFacilitiesInput!
 }
 
 input RoomUpsertWithWhereUniqueWithoutPropertyInput {
@@ -7133,6 +6928,10 @@ input RoomWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  active: Boolean
+
+  """All values that are not equal to given value."""
+  active_not: Boolean
   property: PropertyWhereInput
   prices_every: PriceWhereInput
   prices_some: PriceWhereInput
@@ -7140,9 +6939,9 @@ input RoomWhereInput {
   beds_every: BedWhereInput
   beds_some: BedWhereInput
   beds_none: BedWhereInput
-  facilities_every: RoomFacilityWhereInput
-  facilities_some: RoomFacilityWhereInput
-  facilities_none: RoomFacilityWhereInput
+  facilities_every: FacilityWhereInput
+  facilities_some: FacilityWhereInput
+  facilities_none: FacilityWhereInput
   bookings_every: BookingWhereInput
   bookings_some: BookingWhereInput
   bookings_none: BookingWhereInput
@@ -7167,7 +6966,6 @@ type Subscription {
   bedType(where: BedTypeSubscriptionWhereInput): BedTypeSubscriptionPayload
   facility(where: FacilitySubscriptionWhereInput): FacilitySubscriptionPayload
   propertyFacility(where: PropertyFacilitySubscriptionWhereInput): PropertyFacilitySubscriptionPayload
-  roomFacility(where: RoomFacilitySubscriptionWhereInput): RoomFacilitySubscriptionPayload
   facilityType(where: FacilityTypeSubscriptionWhereInput): FacilityTypeSubscriptionPayload
   policy(where: PolicySubscriptionWhereInput): PolicySubscriptionPayload
   review(where: ReviewSubscriptionWhereInput): ReviewSubscriptionPayload
@@ -7598,6 +7396,7 @@ input TimezoneUpdateInput {
 input TimezoneUpdateOneWithoutCountryInput {
   create: TimezoneCreateWithoutCountryInput
   connect: TimezoneWhereUniqueInput
+  disconnect: Boolean
   delete: Boolean
   update: TimezoneUpdateWithoutCountryDataInput
   upsert: TimezoneUpsertWithoutCountryInput
