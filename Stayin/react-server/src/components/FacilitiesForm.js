@@ -3,9 +3,9 @@ import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import '../styles/index.css'
 
-const FETCH_ALL_FACILITIES = gql`
-    {
-        fetchFacilityTypes {
+const FETCH_PROPERTY_FACILITIES = gql`
+    query FetchPropertyFacilities($filter: String) {
+        fetchFacilityTypes(filter: $filter) {
             id
             name
             facilities {
@@ -74,7 +74,7 @@ class FacilitiesForm extends Component {
             <div>
                 <fieldset>
                     <legend>What services do you offer ?</legend>
-                    <Query query={FETCH_ALL_FACILITIES}>
+                    <Query query={FETCH_PROPERTY_FACILITIES} variables = {{ filter: "room" }}>
                         {({ loading, error, data }) => {
                             if (loading) return <div>Fetching...</div>
                             if (error) return <div>Error</div>

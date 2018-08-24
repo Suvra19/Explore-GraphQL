@@ -25,6 +25,7 @@ const FETCH_PROPERTY = gql`
                 id
                 isComplimentary
                 facility {
+                    id
                     name
                     type {
                         name
@@ -42,15 +43,18 @@ const FETCH_PROPERTY = gql`
                     id
                     amount
                     currency {
+                        id
                         symbol
                     }
                     type {
+                        id
                         name
                     }
                 }
                 beds {
                     id
                     type {
+                        id
                         name
                     }
                     quantity
@@ -80,11 +84,13 @@ class PropertyDetails extends Component {
             policies: [],
             rooms: [],
             show: false,
+            editRoom: {},
         }
         this.showModal = this.showModal.bind(this)
         this.hideModal = this.hideModal.bind(this)
         this.handleValueChange = this.handleValueChange.bind(this)
         this.handleAddRoom = this.handleAddRoom.bind(this)
+        this.handleEditRoom = this.handleEditRoom.bind(this)
     }
 
     componentDidMount() {
@@ -114,13 +120,32 @@ class PropertyDetails extends Component {
     }
 
     handleAddRoom(newRoom) {
+        console.log(`@@@ ${JSON.stringify(newRoom)}`)
         this.setState(prevState => {
             let rooms = JSON.parse(JSON.stringify(prevState.rooms))
-            rooms.push(newRoom)
+            let index = rooms.findIndex(room => room.id === newRoom.id)
+            console.log(`Index ${index} ${JSON.stringify(newRoom)}`)
+            if (index !== -1) {
+                rooms.splice(index, 1, newRoom)
+            } else {
+                rooms.push(newRoom)
+            }
+            
             return {
                 rooms: rooms
             }
 
+        })
+    }
+
+    handleEditRoom(index) {
+        this.setState(prevState => {
+            console.log(`Inside handle edit ${JSON.stringify({ ...prevState.rooms[index]})}`)
+            const room = { ...prevState.rooms[index] }
+            return {
+                editRoom: room,
+                show: true,
+            }
         })
     }
 
@@ -129,7 +154,10 @@ class PropertyDetails extends Component {
     }
 
     hideModal() {
-        this.setState({ show: false })
+        this.setState({ 
+            show: false,
+            editRoom: {} 
+        })
     }
 
     handleValueChange(key, value) {
@@ -178,11 +206,12 @@ class PropertyDetails extends Component {
                             <span key={policy.id}>{policy.policy}</span>
                         ))}
                     </fieldset>
-                    {rooms.length > 0 && <Rooms rooms={rooms}/>}
+                    {rooms.length > 0 && <Rooms rooms={rooms} handleEditRoom={this.handleEditRoom}/>}
                     <RoomCreate
                         show={this.state.show} 
                         handleClose={this.hideModal} 
                         property={id}
+                        editRoom={this.state.editRoom}
                         handleAddRoom={this.handleAddRoom}
                     />
                     <button onClick={this.showModal}>Add room</button>

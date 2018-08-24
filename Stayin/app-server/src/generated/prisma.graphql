@@ -1,5 +1,5 @@
 # source: http://192.168.99.100:4466
-# timestamp: Wed Aug 15 2018 18:23:36 GMT+1200 (New Zealand Standard Time)
+# timestamp: Fri Aug 24 2018 18:00:36 GMT+1200 (New Zealand Standard Time)
 
 type Address implements Node {
   id: ID!
@@ -5248,7 +5248,7 @@ type PropertyFacility implements Node {
   id: ID!
   property(where: PropertyWhereInput): Property!
   facility(where: FacilityWhereInput): Facility!
-  description: String!
+  description: String
   isComplimentary: Boolean
 }
 
@@ -5263,7 +5263,7 @@ type PropertyFacilityConnection {
 }
 
 input PropertyFacilityCreateInput {
-  description: String!
+  description: String
   isComplimentary: Boolean
   property: PropertyCreateOneWithoutFacilitiesInput!
   facility: FacilityCreateOneWithoutPropertiesInput!
@@ -5280,13 +5280,13 @@ input PropertyFacilityCreateManyWithoutPropertyInput {
 }
 
 input PropertyFacilityCreateWithoutFacilityInput {
-  description: String!
+  description: String
   isComplimentary: Boolean
   property: PropertyCreateOneWithoutFacilitiesInput!
 }
 
 input PropertyFacilityCreateWithoutPropertyInput {
-  description: String!
+  description: String
   isComplimentary: Boolean
   facility: FacilityCreateOneWithoutPropertiesInput!
 }
@@ -5315,7 +5315,7 @@ enum PropertyFacilityOrderByInput {
 
 type PropertyFacilityPreviousValues {
   id: ID!
-  description: String!
+  description: String
   isComplimentary: Boolean
 }
 

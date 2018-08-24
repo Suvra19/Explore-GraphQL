@@ -105,8 +105,10 @@ fetchFacilityTypes = (parent, args, context, info) => {
         where['id'] = args.id
     } else if (args.name) {
         where['name'] = args.name
+    } else if (args.filter) {
+        where['name_not'] = args.filter 
     } else {
-        where['name_not'] = "" 
+        where['name_not'] = ""
     }
 
     return context.prisma.query.facilityTypes({

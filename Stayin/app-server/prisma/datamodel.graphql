@@ -74,7 +74,7 @@ type PropertyFacility {
   id: ID! @unique
   property: Property! @relation(name: "PropertyFacilities")
   facility: Facility!
-  description: String!
+  description: String
   isComplimentary: Boolean @default(value: "false")
 }
 

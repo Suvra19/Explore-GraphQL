@@ -5,8 +5,8 @@ import { Mutation, Query } from 'react-apollo'
 import { Redirect } from 'react-router-dom'
 
 const CREATE_PROPERTY = gql`
-    mutation CreateProperty($name: String!, $about: String, $logo: String, $phone: String!, $email: String!, $photos: PropertyCreatephotosInput, $address: AddressCreateOneInput!, $rooms: RoomCreateManyWithoutPropertyInput, $policies: PolicyCreateManyWithoutPropertiesInput, $categories: CategoryCreateManyWithoutPropertiesInput, $facilties: PropertyFacilityCreateManyWithoutPropertyInput) {
-        createProperty(name: $name, about: $about, logo: $logo, phone: $phone, email: $email, photos: $photos, address: $address, rooms: $rooms, policies: $policies, categories: $categories, facilties: $facilties) {
+    mutation CreateProperty($name: String!, $about: String, $logo: String, $phone: String!, $email: String!, $photos: PropertyCreatephotosInput, $address: AddressCreateOneInput!, $rooms: RoomCreateManyWithoutPropertyInput, $policies: PolicyCreateManyWithoutPropertiesInput, $categories: CategoryCreateManyWithoutPropertiesInput, $facilities: PropertyFacilityCreateManyWithoutPropertyInput) {
+        createProperty(name: $name, about: $about, logo: $logo, phone: $phone, email: $email, photos: $photos, address: $address, rooms: $rooms, policies: $policies, categories: $categories, facilities: $facilities) {
             id
         }
     }
@@ -55,6 +55,8 @@ class Confirmation extends Component {
                     <span>Country: </span>
                     <span>{address.create.country}</span>
                 </section>
+                <p>{JSON.stringify(facilities)}</p>
+                <p>{JSON.stringify(policies)}</p>
                 <Mutation 
                     mutation={CREATE_PROPERTY} 
                     variables={{name, about, email, phone, address, categories, facilities, policies, logo, photos, rooms}}

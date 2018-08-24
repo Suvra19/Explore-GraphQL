@@ -66,7 +66,9 @@ updateCustomerInfo = (parent, args, context, info) => {
 //cjkdbg5h8000l0815keedt25l
 createProperty = (parent, args, context, info) => {
     const owner = getCustomerId(context)
-    let data = getQueryDataFromArgs(args)
+    console.log(`Before ${JSON.stringify(args)}`)
+    const data = getQueryDataFromArgs(args)
+    console.log(`After ${JSON.stringify(data)}`)
     data['owner'] = {
         connect: {
             id: owner
@@ -75,6 +77,7 @@ createProperty = (parent, args, context, info) => {
     if (!data.hasOwnProperty('name') || !data.hasOwnProperty('address')) {
         return new Error(`Required field(s) missing in ${JSON.stringify(data)}`)
     }
+    console.log(`DATA ${JSON.stringify(data)}`)
    return context.prisma.mutation.createProperty({
         data: data
     }, info)
@@ -158,6 +161,128 @@ createRoom = (parent, args, context, info) => {
     return context.prisma.mutation.createRoom({
         data: roomData
     }, info)
+}
+
+updateRoom = (parent, args, context, info) => {
+    console.log(`!!!!! Before ${JSON.stringify(args)}`)
+    const filteredData = getQueryDataFromArgs(args)
+    console.log(`$$$$ After ${JSON.stringify(filteredData)}`)
+    if (!filteredData.hasOwnProperty('room')) {
+        return new Error(`Required field id is missing`)
+    }
+
+    const {room, name, prices, beds, facilities, deletePrices, deleteBeds, deleteFacilities} = filteredData
+    console.log(`^^^^ ${JSON.stringify(filteredData)}`)
+
+    const priceData = prices.map(price => ({
+        where: {
+            id: price.id ? price.id : ''
+        },
+        update: {
+            amount: price.amount,
+            currency: {
+                connect: {
+                    id: price.currency
+                }
+            },
+            type: {
+                connect: {
+                    id: price.type
+                } 
+            }
+        },
+        create: {
+            amount: price.amount,
+            currency: {
+                connect: {
+                    id: price.currency
+                }
+            },
+            type: {
+                connect: {
+                    id: price.type
+                } 
+            }
+        }
+    }))
+
+    const bedData = beds.map(bed => ({
+        where: {
+            id: bed.id ? bed.id : ''
+        },
+        update: {
+            quantity: bed.quantity,
+            type: {
+                connect: {
+                    id: bed.type
+                }
+            }
+        },
+        create: {
+            quantity: bed.quantity,
+            type: {
+                connect: {
+                    id: bed.type
+                }
+            }
+        }
+    }))
+
+    let data = {
+        name: name,
+        prices: {
+            upsert: priceData
+        },
+        beds: {
+            upsert: bedData
+        },
+    }
+
+    if (facilities) {
+        const facilityConnectData = facilities.map(facility => ({
+            id: facility
+        }))
+        data['facilities'] = {
+            connect: facilityConnectData
+        }
+    }
+
+    if (deleteFacilities) {
+        const facilityDisconnectData = deleteFacilities.map(facility => ({
+            id: facility
+        }))
+        data['facilities'] = {
+            disconnect: facilityDisconnectData
+        }
+    }
+
+    if (deletePrices) {
+        const deletePriceData = deletePrices.map(price => ({
+            id: price
+        }))
+        data['prices'] = {
+            delete: deletePriceData
+        }
+    }
+
+    if (deleteBeds) {
+        const deleteBedData = deleteBeds.map(bed => ({
+            id: bed
+        }))
+        data['beds'] = {
+            delete: deleteBedData
+        }
+    }
+
+    console.log(`INPUT DATA ${JSON.stringify(data)}`)
+    
+    return context.prisma.mutation.updateRoom({
+        data: data,
+        where: {
+            id: room
+        }
+    }, info)
+
 }
 
 // updateBasicHotelInfo = async (parent, args, context, info) => {
@@ -265,4 +390,5 @@ module.exports = {
     createProperty,
     updateCustomerInfo,
     createRoom,
+    updateRoom,
 }

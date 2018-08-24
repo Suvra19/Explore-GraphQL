@@ -6,7 +6,7 @@ type Query {
     fetchPolicies(id: ID, policy: String): [Policy!]!
     fetchCategories(id: ID, name: String): [Category!]!
     fetchFacilities(id: ID, name: String, type: String): [Facility!]!
-    fetchFacilityTypes(id: ID, name: String): [FacilityType!]!
+    fetchFacilityTypes(id: ID, name: String, filter: String): [FacilityType!]!
     fetchOneProperty(id: ID!): Property
     fetchPriceTypes(id: ID, name: String): [PriceType!]!
     fetchBedTypes(id: ID, name: String): [BedType!]!
@@ -17,8 +17,9 @@ type Mutation {
     customerSignup(name: String, email: String!, password: String!): CustomerAuthPayload
     customerLogin(email: String!, password: String!): CustomerAuthPayload
     updateCustomerInfo(email: String, password: String, address: AddressCreateInput, phone: String): Customer
-    createProperty(name: String!, about: String, logo: String, phone: String!, email: String!, photos: PropertyCreatephotosInput, address: AddressCreateOneInput!, rooms: RoomCreateManyWithoutPropertyInput, policies: PolicyCreateManyWithoutPropertiesInput, categories: CategoryCreateManyWithoutPropertiesInput, facilties: PropertyFacilityCreateManyWithoutPropertyInput): Property
+    createProperty(name: String!, about: String, logo: String, phone: String!, email: String!, photos: PropertyCreatephotosInput, address: AddressCreateOneInput!, rooms: RoomCreateManyWithoutPropertyInput, policies: PolicyCreateManyWithoutPropertiesInput, categories: CategoryCreateManyWithoutPropertiesInput, facilities: PropertyFacilityCreateManyWithoutPropertyInput): Property
     createRoom(name: String, property: String, prices: [RoomPriceCreateInput!]!, beds:[RoomBedCreateInput!]!, facilities: [String!]!): Room
+    updateRoom(room: String!, name: String, prices: [RoomPriceCreateInput], beds: [RoomBedCreateInput], facilities: [String], deletePrices: [String], deleteBeds: [String], deleteFacilities: [String]): Room
     #createRoom(name: String, property: ID!, prices: [RoomPriceCreateInput!]!): Room
     # createRoom(name: String, property: PropertyCreateOneWithoutRoomsInput!, prices: PriceCreateManyInput!, beds: BedCreateManyWithoutRoomsInput!, facilties: RoomFacilityCreateManyWithoutRoomInput): Room
 
@@ -37,12 +38,14 @@ type PropertyAuthPayload {
 }
 
 input RoomPriceCreateInput {
+    id: ID
     amount: Float!
     currency: String!
     type: String!
 }
 
 input RoomBedCreateInput {
+    id: ID
     type: String!
     quantity: Int!
 }
