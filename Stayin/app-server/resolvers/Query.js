@@ -146,6 +146,21 @@ fetchBedTypes = (parent, args, context, info) => {
     }, info)
 }
 
+fetchTripTypes = (parent, args, context, info) => {
+    let where = {}
+    if (args.id) {
+        where['id'] = args.id
+    } else if (args.name) {
+        where['name'] = args.name
+    } else {
+        where['name_not'] = "" 
+    }
+
+    return context.prisma.query.tripTypes({
+        where: where
+    }, info)
+}
+
 fetchCurrencies = (parent, args, context, info) => {
     let where = {}
     if (args.id) {
@@ -172,4 +187,5 @@ module.exports = {
     fetchPriceTypes,
     fetchBedTypes,
     fetchCurrencies,
+    fetchTripTypes,
 }

@@ -24,10 +24,11 @@ class Property extends Component {
                     {this.props.property.address.city},
                     {this.props.property.address.country}
                 </div>
-                {/* <div>
+                <div>
                     Rooms:
-                    { this.props.property.rooms.map(room => <Room key={room.id} room={room}/>)}
-                </div> */}
+                    <Rooms rooms={this.props.property.rooms}/>
+                    {/* { this.props.property.rooms.map(room => <Room key={room.id} room={room}/>)} */}
+                </div>
             </div>
         )
     }

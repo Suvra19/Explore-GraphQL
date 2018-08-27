@@ -1,48 +1,24 @@
 import React, {Component} from 'react'
 import gql from 'graphql-tag'
 import Property from './Property'
-import { withApollo } from 'react-apollo'
+import { Query, withApollo } from 'react-apollo'
 import { setFormDataState } from '../common/utils'
-
-const PROPERTY_SEARCH = gql`
-    query PropertySearch($city: String!, $hotel: String, $adults: Int!) {
-        findProperties(city: $city, hotel: $hotel, adults: $adults) {
-            id
-            name
-            about
-            address {
-                street
-                city
-            }
-            hotel {
-                name
-            }
-            rooms {
-                id
-                name
-                price
-            }
-        }
-    }
-`
 
 class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            formData: {
-                hotel: '',
-                city: '',
-                tripType: 'family',
-                petFriendly: false,
-                checkIn: '',
-                checkOut: '',
-                minPrice: '',
-                maxPrice: '',
-                adults: 1,
-                kids: 0,
-                infants: 0,
-            },
+            name: '',
+            city: '',
+            tripType: '',
+            petFriendly: false,
+            checkIn: '',
+            checkOut: '',
+            minPrice: '',
+            maxPrice: '',
+            adults: 1,
+            kids: 0,
+            infants: 0,
             properties: [],
         }
         this.handleDates = this.handleDates.bind(this)
@@ -50,39 +26,38 @@ class Home extends Component {
         this.handleFormDataChange = this.handleFormDataChange.bind(this)
     }
 
-    // _setFormDataState(key, value) {
-    //     this.setState({
-    //         formData: {
-    //             ...this.state.formData,
-    //             [key]: value
-    //         }
-    //     })
-    // }
-
     handleFormDataChange(event) {
         let key = event.target.id
         let value = event.target.value
-        if (event.target.id === "petFriendly") {
+        if (key === "petFriendly") {
             value = !this.state.formData.petFriendly
         }
-        setFormDataState.call(this, key, value)
+        this.setState({
+            [key]: value
+        })
     }
 
-    async handleTripType(event) {
-        await setFormDataState.call(this, "tripType", event.target.value)
-        if (this.state.formData.tripType === 'romantic') {
-            setFormDataState.call(this, "adults", 2)
-        }
-        if (this.state.formData.tripType === 'family' || this.state.formData.tripType === 'solo' || 
-        this.state.formData.tripType === 'work') {
-            setFormDataState.call(this, "adults", 1)
-        }
+    handleTripType(event) {
+        const value = event.target.value
+        this.setState(prevState => {
+            if (prevState.tripType !== value) {
+                return {
+                    tripType: value
+                }
+            }
+        })
     }
 
-    async handleDates(event) {
-        await setFormDataState.call(this, "checkIn", event.target.value) 
-        await this._updateMinMaxCheckout()
-        setFormDataState.call(this, "checkOut", this.minCheckOut)
+    handleDates(event) {
+        const value = event.target.value
+        this.setState({
+            checkIn: value
+        }, () => {
+            this._updateMinMaxCheckout()
+            this.setState({
+                checkOut: this.minCheckOut
+            })
+        })
     }
 
     _updateMinMaxCheckout() {
@@ -104,7 +79,7 @@ class Home extends Component {
     }
 
     render() {
-        const {hotel, city, tripType, petFriendly, checkIn, checkOut, minPrice, maxPrice, adults, kids, infants} = this.state.formData
+        const {hotel, city, tripType, petFriendly, checkIn, checkOut, minPrice, maxPrice, adults, kids, infants} = this.state
         return (
             <div>
                 <div className="flex mt3">
@@ -134,13 +109,23 @@ class Home extends Component {
                     </label>
                     <label>
                         Trip type
-                        <select value={tripType} onChange={this.handleTripType}>
-                            <option value="family">Family</option>
-                            <option
-                            value="work">Work</option>
-                            <option value="soloTraveller">Solo Traveller</option>
-                            <option value="romantic">Romantic</option>
-                        </select>
+                        <Query query = {FETCH_TRIP_TYPE}>{({loading, error, data}) => {
+                            if (loading) return <div>Fetching...</div>
+                            if (error) return <div>Error</div>
+                            const tripTypes = data.fetchTripTypes
+                            return (
+                                <select name="tripType"
+                                value={tripType} onChange={this.handleTripType}>
+                                {
+                                    tripTypes.map(tripType => 
+                                    <option key={tripType.id} value={tripType.name}>
+                                        {tripType.name}
+                                    </option>)
+                                }
+                                </select>
+                            )
+                        }}
+                        </Query>
                     </label>
                     <label>
                         Pet friendly:
@@ -212,14 +197,68 @@ class Home extends Component {
     }
 
     _search = async () => {
-        const {city, hotel, adults} = this.state.formData
+        const {name, city, tripTypes, petFriendly, checkIn, checkOut, adults, kids, infants} = this.state
         const result = await this.props.client.query({
             query: PROPERTY_SEARCH,
-            variables: {city, hotel, adults}
+            variables: {name, city, tripTypes, petFriendly, checkIn, checkOut, adults, kids, infants}
         })
         const propertyList = result.data.findProperties
         this.setState({properties: propertyList})   
     }
 }
+
+const FETCH_TRIP_TYPE = gql`
+    query FetchTripTypes($id: ID, $name: String) {
+        fetchTripTypes(id: $id, name: $name) {
+            id
+            name
+        }
+    }
+`
+
+const PROPERTY_SEARCH = gql`
+    query PropertySearch($filter: PropertySearch) {
+        findProperties(filter: $filter) {
+            id
+            name
+            about
+            address {
+                street
+                city
+            }
+            rooms {
+                id
+                name
+                prices {
+                    amount
+                    currency {
+                        symbol
+                        name
+                        name_plural
+                    }
+                    type {
+                        name
+                    }
+                }
+                beds {
+                    id
+                    quantity
+                    type {
+                        name
+                    }
+                }
+            },
+            facilities {
+                isComplimentary
+                facility {
+                    name
+                    type {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`
 
 export default withApollo(Home)

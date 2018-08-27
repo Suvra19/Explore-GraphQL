@@ -33,7 +33,7 @@ class Rooms extends Component {
                                 <span>{bed.quantity}</span>
                             </div>
                         ))}
-                        <button id={index} onClick={this.handleEdit}>edit</button>
+                        {this.props.handleEditRoom && <button id={index} onClick={this.handleEdit}>edit</button>}
                     </div>
                 ))}
             </fieldset>

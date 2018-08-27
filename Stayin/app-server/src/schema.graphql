@@ -1,7 +1,7 @@
-# import Customer, Property, Category, Facility, FacilityType, Room, AddressCreateInput, PropertyCreatephotosInput, AddressCreateOneInput, RoomCreateManyWithoutPropertyInput, PolicyCreateManyWithoutPropertiesInput, CategoryCreateManyWithoutPropertiesInput, PropertyFacilityCreateManyWithoutPropertyInput, PropertyCreateOneWithoutRoomsInput, PriceCreateManyInput, BedCreateManyWithoutRoomsInput, RoomFacilityCreateManyWithoutRoomInput from "./generated/prisma.graphql"
+# import Customer, Property, Category, Facility, FacilityType, Room, AddressCreateInput, PropertyCreatephotosInput, AddressCreateOneInput, RoomCreateManyWithoutPropertyInput, PolicyCreateManyWithoutPropertiesInput, CategoryCreateManyWithoutPropertiesInput, PropertyFacilityCreateManyWithoutPropertyInput, PropertyCreateOneWithoutRoomsInput, PriceCreateManyInput, BedCreateManyWithoutRoomsInput, RoomFacilityCreateManyWithoutRoomInput, TripType from "./generated/prisma.graphql"
 
 type Query {
-    findProperties(name: String, city: String, tripType: String, checkIn: String, checkOut: String, adults: Int, kids: Int, infants: Int, petFriendly: Boolean, first: Int, skip: Int): [Property!]!
+    findProperties(filter: PropertySearch): [Property!]!
     findCustomer(email: String!): Customer
     fetchPolicies(id: ID, policy: String): [Policy!]!
     fetchCategories(id: ID, name: String): [Category!]!
@@ -11,6 +11,7 @@ type Query {
     fetchPriceTypes(id: ID, name: String): [PriceType!]!
     fetchBedTypes(id: ID, name: String): [BedType!]!
     fetchCurrencies(id: ID, symbol: String): [Currency!]!
+    fetchTripTypes(id: ID, name: String): [TripType!]!
 }
 
 type Mutation {
@@ -48,4 +49,17 @@ input RoomBedCreateInput {
     id: ID
     type: String!
     quantity: Int!
+}
+
+input PropertySearch {
+    name: String
+    city: String
+    triptype: String
+    checkIn: DateTime
+    checkOut: DateTime
+    petFriendly: Boolean
+    adults: Int
+    kids: Int
+    infants: Int
+    pets: Int
 }

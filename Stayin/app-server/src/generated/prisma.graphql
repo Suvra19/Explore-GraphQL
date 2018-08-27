@@ -1,5 +1,5 @@
 # source: http://192.168.99.100:4466
-# timestamp: Fri Aug 24 2018 18:00:36 GMT+1200 (New Zealand Standard Time)
+# timestamp: Sat Aug 25 2018 20:09:10 GMT+1200 (New Zealand Standard Time)
 
 type Address implements Node {
   id: ID!
@@ -442,6 +442,10 @@ type AggregateTax {
 }
 
 type AggregateTimezone {
+  count: Int!
+}
+
+type AggregateTripType {
   count: Int!
 }
 
@@ -3578,6 +3582,7 @@ type Mutation {
   createTimezone(data: TimezoneCreateInput!): Timezone!
   createLanguage(data: LanguageCreateInput!): Language!
   createPreference(data: PreferenceCreateInput!): Preference!
+  createTripType(data: TripTypeCreateInput!): TripType!
   createTax(data: TaxCreateInput!): Tax!
   createPromo(data: PromoCreateInput!): Promo!
   createBooking(data: BookingCreateInput!): Booking!
@@ -3601,6 +3606,7 @@ type Mutation {
   updateTimezone(data: TimezoneUpdateInput!, where: TimezoneWhereUniqueInput!): Timezone
   updateLanguage(data: LanguageUpdateInput!, where: LanguageWhereUniqueInput!): Language
   updatePreference(data: PreferenceUpdateInput!, where: PreferenceWhereUniqueInput!): Preference
+  updateTripType(data: TripTypeUpdateInput!, where: TripTypeWhereUniqueInput!): TripType
   updateTax(data: TaxUpdateInput!, where: TaxWhereUniqueInput!): Tax
   updatePromo(data: PromoUpdateInput!, where: PromoWhereUniqueInput!): Promo
   updateBooking(data: BookingUpdateInput!, where: BookingWhereUniqueInput!): Booking
@@ -3624,6 +3630,7 @@ type Mutation {
   deleteTimezone(where: TimezoneWhereUniqueInput!): Timezone
   deleteLanguage(where: LanguageWhereUniqueInput!): Language
   deletePreference(where: PreferenceWhereUniqueInput!): Preference
+  deleteTripType(where: TripTypeWhereUniqueInput!): TripType
   deleteTax(where: TaxWhereUniqueInput!): Tax
   deletePromo(where: PromoWhereUniqueInput!): Promo
   deleteBooking(where: BookingWhereUniqueInput!): Booking
@@ -3647,6 +3654,7 @@ type Mutation {
   upsertTimezone(where: TimezoneWhereUniqueInput!, create: TimezoneCreateInput!, update: TimezoneUpdateInput!): Timezone!
   upsertLanguage(where: LanguageWhereUniqueInput!, create: LanguageCreateInput!, update: LanguageUpdateInput!): Language!
   upsertPreference(where: PreferenceWhereUniqueInput!, create: PreferenceCreateInput!, update: PreferenceUpdateInput!): Preference!
+  upsertTripType(where: TripTypeWhereUniqueInput!, create: TripTypeCreateInput!, update: TripTypeUpdateInput!): TripType!
   upsertTax(where: TaxWhereUniqueInput!, create: TaxCreateInput!, update: TaxUpdateInput!): Tax!
   upsertPromo(where: PromoWhereUniqueInput!, create: PromoCreateInput!, update: PromoUpdateInput!): Promo!
   upsertBooking(where: BookingWhereUniqueInput!, create: BookingCreateInput!, update: BookingUpdateInput!): Booking!
@@ -3670,6 +3678,7 @@ type Mutation {
   updateManyTimezones(data: TimezoneUpdateInput!, where: TimezoneWhereInput): BatchPayload!
   updateManyLanguages(data: LanguageUpdateInput!, where: LanguageWhereInput): BatchPayload!
   updateManyPreferences(data: PreferenceUpdateInput!, where: PreferenceWhereInput): BatchPayload!
+  updateManyTripTypes(data: TripTypeUpdateInput!, where: TripTypeWhereInput): BatchPayload!
   updateManyTaxes(data: TaxUpdateInput!, where: TaxWhereInput): BatchPayload!
   updateManyPromoes(data: PromoUpdateInput!, where: PromoWhereInput): BatchPayload!
   updateManyBookings(data: BookingUpdateInput!, where: BookingWhereInput): BatchPayload!
@@ -3693,6 +3702,7 @@ type Mutation {
   deleteManyTimezones(where: TimezoneWhereInput): BatchPayload!
   deleteManyLanguages(where: LanguageWhereInput): BatchPayload!
   deleteManyPreferences(where: PreferenceWhereInput): BatchPayload!
+  deleteManyTripTypes(where: TripTypeWhereInput): BatchPayload!
   deleteManyTaxes(where: TaxWhereInput): BatchPayload!
   deleteManyPromoes(where: PromoWhereInput): BatchPayload!
   deleteManyBookings(where: BookingWhereInput): BatchPayload!
@@ -6083,6 +6093,7 @@ type Query {
   timezones(where: TimezoneWhereInput, orderBy: TimezoneOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Timezone]!
   languages(where: LanguageWhereInput, orderBy: LanguageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Language]!
   preferences(where: PreferenceWhereInput, orderBy: PreferenceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Preference]!
+  tripTypes(where: TripTypeWhereInput, orderBy: TripTypeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TripType]!
   taxes(where: TaxWhereInput, orderBy: TaxOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tax]!
   promoes(where: PromoWhereInput, orderBy: PromoOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Promo]!
   bookings(where: BookingWhereInput, orderBy: BookingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Booking]!
@@ -6106,6 +6117,7 @@ type Query {
   timezone(where: TimezoneWhereUniqueInput!): Timezone
   language(where: LanguageWhereUniqueInput!): Language
   preference(where: PreferenceWhereUniqueInput!): Preference
+  tripType(where: TripTypeWhereUniqueInput!): TripType
   tax(where: TaxWhereUniqueInput!): Tax
   promo(where: PromoWhereUniqueInput!): Promo
   booking(where: BookingWhereUniqueInput!): Booking
@@ -6129,6 +6141,7 @@ type Query {
   timezonesConnection(where: TimezoneWhereInput, orderBy: TimezoneOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TimezoneConnection!
   languagesConnection(where: LanguageWhereInput, orderBy: LanguageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LanguageConnection!
   preferencesConnection(where: PreferenceWhereInput, orderBy: PreferenceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PreferenceConnection!
+  tripTypesConnection(where: TripTypeWhereInput, orderBy: TripTypeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TripTypeConnection!
   taxesConnection(where: TaxWhereInput, orderBy: TaxOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TaxConnection!
   promoesConnection(where: PromoWhereInput, orderBy: PromoOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PromoConnection!
   bookingsConnection(where: BookingWhereInput, orderBy: BookingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BookingConnection!
@@ -6973,6 +6986,7 @@ type Subscription {
   timezone(where: TimezoneSubscriptionWhereInput): TimezoneSubscriptionPayload
   language(where: LanguageSubscriptionWhereInput): LanguageSubscriptionPayload
   preference(where: PreferenceSubscriptionWhereInput): PreferenceSubscriptionPayload
+  tripType(where: TripTypeSubscriptionWhereInput): TripTypeSubscriptionPayload
   tax(where: TaxSubscriptionWhereInput): TaxSubscriptionPayload
   promo(where: PromoSubscriptionWhereInput): PromoSubscriptionPayload
   booking(where: BookingSubscriptionWhereInput): BookingSubscriptionPayload
@@ -7591,6 +7605,189 @@ input TimezoneWhereInput {
 }
 
 input TimezoneWhereUniqueInput {
+  id: ID
+  name: String
+}
+
+type TripType implements Node {
+  id: ID!
+  name: String!
+}
+
+"""A connection to a list of items."""
+type TripTypeConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [TripTypeEdge]!
+  aggregate: AggregateTripType!
+}
+
+input TripTypeCreateInput {
+  name: String!
+}
+
+"""An edge in a connection."""
+type TripTypeEdge {
+  """The item at the end of the edge."""
+  node: TripType!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum TripTypeOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type TripTypePreviousValues {
+  id: ID!
+  name: String!
+}
+
+type TripTypeSubscriptionPayload {
+  mutation: MutationType!
+  node: TripType
+  updatedFields: [String!]
+  previousValues: TripTypePreviousValues
+}
+
+input TripTypeSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [TripTypeSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [TripTypeSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [TripTypeSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: TripTypeWhereInput
+}
+
+input TripTypeUpdateInput {
+  name: String
+}
+
+input TripTypeWhereInput {
+  """Logical AND on all given filters."""
+  AND: [TripTypeWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [TripTypeWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [TripTypeWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+}
+
+input TripTypeWhereUniqueInput {
   id: ID
   name: String
 }

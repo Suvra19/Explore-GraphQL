@@ -200,6 +200,11 @@ type Preference {
   customer: Customer!
 }
 
+type TripType {
+  id: ID! @unique
+  name: String! @unique
+}
+
 enum Unit {
   PERCENT
   NZD
